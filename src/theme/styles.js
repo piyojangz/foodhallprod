@@ -11,7 +11,7 @@ import Sizes from './sizes';
 
 export default {
   appContainer: {
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
 
   // Default
@@ -223,17 +223,16 @@ export default {
   // Navbar
   navbar: {
     backgroundColor: Colors.brand.primary,
-    borderBottomWidth: 0,
+    borderBottomWidth: 0, 
   },
   navbarTitle: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontFamily: 'Roboto-Bold',
-    paddingTop:0,
-    fontSize: 18,
+    color: '#000',
+   fontFamily: Fonts.base.family, 
+    paddingTop:8,
+    fontSize: 20,
   },
   navbarButton: {
-    tintColor: '#ffffff',
+    tintColor: '#000',
   },
 
   // TabBar

@@ -5,25 +5,29 @@
  * https://github.com/mcnamee/react-native-starter-app
  */
 /* global __DEV__ */
-import {AppColors, AppStyles, AppSizes} from '@theme/';
+import { AppColors, AppStyles, AppSizes } from '@theme/';
 
 export default {
   // App Details
-  appName : 'Kongklang',
+  appName: 'Kongklang',
 
   // Build Configuration - eg. Debug or Release?
-  DEV : __DEV__,
+  DEV: __DEV__,
 
   // Google Analytics - uses a 'dev' account while we're testing
-  gaTrackingId : (__DEV__)
+  gaTrackingId: (__DEV__)
     ? 'UA-84284256-2'
     : 'UA-84284256-1',
 
   // URLs
-  urls : {},
+  urls: {},
+  api: 'http://leafood.servewellsolution.com/',
+    //api:'http://192.168.1.36/api/',
+  imgaddress: 'http://leafood.servewellsolution.com/public/uploads/shop_img/',
+
 
   // Navbar Props
-  navbarProps : {
+  navbarProps: {
     hideNavBar: false,
     titleStyle: AppStyles.navbarTitle,
     navigationBarStyle: AppStyles.navbar,
@@ -35,5 +39,5 @@ export default {
     }
   },
 
- 
+
 };

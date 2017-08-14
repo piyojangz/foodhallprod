@@ -1,0 +1,256 @@
+/**
+ * Placeholder Scene
+ *
+    <Placeholder text={"Hello World"} />
+ *
+ * React Native Starter App
+ * https://github.com/mcnamee/react-native-starter-app
+ */
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as Animatable from 'react-native-animatable';
+import { AppConfig } from '@constants/';
+import PropTypes from 'prop-types';
+import ImageSlider from 'react-native-image-slider';
+import LoadingContainer from 'react-native-loading-container';
+import {
+  View,
+  Alert,
+  ListView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TouchableWithoutFeedback
+} from 'react-native';
+
+
+
+import { TabViewAnimated, TabBar } from 'react-native-tab-view';
+import Icon from 'react-native-vector-icons/Ionicons';
+// Consts and Libs
+import { AppColors, AppStyles, AppSizes } from '@theme/';
+//Action
+import * as appdataActions from '@redux/appdata/actions';
+// Components
+
+import {
+  Alerts,
+  Card,
+  Spacer,
+  Text,
+  List,
+  ListItem,
+  FormInput,
+  Button,
+  FormLabel,
+} from '@components/ui/';
+import { Actions } from 'react-native-router-flux';
+
+/* Styles ==================================================================== */
+const styles = StyleSheet.create({
+  btn: {
+    backgroundColor: '#27AE61',
+    paddingTop: 10,
+    paddingBottom: 5,
+    paddingLeft: 15,
+    paddingRight: 15,
+    margin: 10,
+    borderRadius: 5,
+  },
+});
+
+function numberWithCommas(x) {
+  return x
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// What data from the store shall we send to the component?
+const mapStateToProps = state => ({
+  stotal: numberWithCommas(state.appdataReducer.total)
+});
+
+// Any actions to map to the component?
+const mapDispatchToProps = {
+  total: appdataActions.total
+};
+
+/* Component ==================================================================== */
+class Home extends Component {
+
+  constructor(props) {
+    super(props);
+
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    this.state = {
+      dataSource: ds.cloneWithRows([
+        {
+          img: [
+            'https://img-wongnai.cdn.byteark.com/p/l/2017/07/18/6c73b2ecb14248f59acd4d285e61a7c2.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/l/2017/07/18/6c73b2ecb14248f59acd4d285e61a7c2.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/l/2017/07/18/6c73b2ecb14248f59acd4d285e61a7c2.jpg'
+          ],
+          id: 0,
+          name: 'SLIDE'
+        },
+        {
+          img: 'https://img-wongnai.cdn.byteark.com/p/l/2016/06/03/70072d7c73ae4e179df02f18dc215e77.jpg',
+          id: 1,
+          name: 'ชาพะยอม (สาขาลาดปลาเค้า)',
+          catename: 'กาแฟ/ของหวาน',
+          distanct: '1.25 km',
+          shops: [
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/01/18/9ab86b6f83424f72b29266865d44a682.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/01/18/e713324fab6e46c0bef25d130b7783da.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/01/18/6a9af888d6ed4ad9bbf116c7bf7f8d96.jpg'
+          ]
+        }, {
+          img: 'https://img-wongnai.cdn.byteark.com/p/l/2017/05/05/079be6d67ed5452d85da9c3cdfc21cb6.jpg',
+          id: 2,
+          name: 'ฝากท้อง จิ้มจุ่มหม้อเบ้อเร่อ',
+          catename: 'อาหารทั่วไป',
+          distanct: '1.25 km',
+          shops: [
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/07/11/14a8ecf18c0a4e609cca7156aeade678.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/07/11/bb9a7dfdee3c49c68bd556736416f6d9.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/s/2017/07/11/6cb48968ef3744ed8f7a1b2ea4b8374a.jpg'
+          ]
+        }, {
+          img: 'https://img-wongnai.cdn.byteark.com/p/l/2014/05/18/06aefa44392d46cfae3019eb7fee193c.jpg',
+          id: 3,
+          name: 'มานาก๋วยเตี๋ยวหมู (Ma Na Noodle)',
+          catename: 'อาหารทั่วไป',
+          distanct: '1.25 km',
+          shops: [
+            'https://img-wongnai.cdn.byteark.com/p/t/2017/07/13/3f345a60ac2844a28602b8f97cb4221e.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/t/2017/05/10/b60559378502435b8c4e1a0699b69595.jpg',
+            'https://img-wongnai.cdn.byteark.com/p/t/2017/04/22/fb3f80a0a4bf42a1937f161b5e944093.jpg'
+          ]
+        }
+      ]),
+    }
+  }
+
+  componentWillMount = () => {
+    Actions.refresh({ title: 'ลาดพร้าว' })
+  }
+
+  onItemClicked = (_type, _title) => {
+    Actions.inputdetail({ outcometype: _type, title: _title, parent: this });
+  }
+
+
+
+
+
+  renderShop = (data) => {
+    return (
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+        <Image
+          style={{
+            height: 100,
+            width: 200,
+            borderRadius: 5
+          }}
+          resizeMode={"cover"}
+          source={{
+            uri: data.img
+          }} />
+
+        <Image
+          style={{
+            height: 100,
+            width: 100,
+            borderRadius: 5,
+            marginLeft: 5,
+          }}
+          resizeMode={"cover"}
+          source={{
+            uri: data.shops[0]
+          }} />
+
+        <Image
+          style={{
+            height: 100,
+            width: 100,
+            borderRadius: 5,
+            marginLeft: 5,
+          }}
+          resizeMode={"cover"}
+          source={{
+            uri: data.shops[1]
+          }} />
+
+        <Image
+          style={{
+            height: 100,
+            width: 100,
+            borderRadius: 5,
+            marginLeft: 5,
+          }}
+          resizeMode={"cover"}
+          source={{
+            uri: data.shops[2]
+          }} />
+      </View>
+
+
+    )
+  }
+
+  renderRow = (data) => {
+    if (data.id == 0) {
+      return (
+        <View style={{ marginBottom: 5, padding: 5, }}>
+          <ImageSlider height={200} images={data.img}  />
+        </View>)
+    }
+    else {
+      return (
+        <View style={{ margin: 5, marginTop: 0, backgroundColor: '#fff', borderRadius: 5, }}>
+          <View style={{ padding: 10, paddingBottom: 0, }}><Text h3 style={{ color: '#000' }}>{data.name}</Text></View>
+          <View style={{ padding: 10, paddingTop: 0, paddingBottom: 0, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#000' }}>{data.catename}</Text>
+            <Text style={{ color: '#7D7D7D' }}><Icon name={'md-pin'} size={15} color={'#E2E2E2'} />  {data.distanct}</Text>
+          </View>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {this.renderShop(data)}
+          </ScrollView>
+          <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'center', }}>
+
+            <TouchableOpacity>
+              <View style={styles.btn}>
+                <Text style={{ color: '#fff', fontSize: 16, }}>รับกลับบ้าน</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={styles.btn}>
+                <Text style={{ color: '#fff', fontSize: 16, }}>บริการส่งถึงที่</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        </View>
+      )
+    }
+  }
+
+  render = () => {
+    return (
+      <View style={[AppStyles.container]}>
+        <List style={{ marginTop: 0, }}>
+          <ListView
+            renderRow={this.renderRow.bind(this)}
+            dataSource={this.state.dataSource}
+          />
+        </List>
+      </View>
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

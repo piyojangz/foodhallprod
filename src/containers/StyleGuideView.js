@@ -19,7 +19,7 @@ import { Actions } from 'react-native-router-flux';
 
 // Consts and Libs
 import { AppColors, AppStyles } from '@theme/';
-
+import { SwipeListView } from 'react-native-swipe-list-view';
 // Components
 import {
   Alerts,

@@ -16,49 +16,150 @@ import Drawer from '@containers/ui/DrawerContainer';
 // Scenes
 import AppLaunch from '@containers/Launch/LaunchContainer';
 import Placeholder from '@components/general/Placeholder';
+import Map from '@components/general/map/Map';
 import WebView from '@components/general/WebView';
-import Outcome from '@components/general/inputtype/Outcome';
-
+import Shopdetail from '@components/general/shopdetail/Shopdetail';
+import Basket from '@components/general/basket/Basket';
+import Login from '@components/general/login/Login';
+import Otp from '@components/general/otp/Otp';
+import Verifyotp from '@components/general/otp/Verifyotp';
+import Profile from '@components/general/Profile';
+import Lastregister from '@components/general/otp/Lastregister';
+import Shippingaddress from '@components/general/shippingaddress/Shippingaddress';
+import Shippingaddresslist from '@components/general/shippingaddress/Shippingaddresslist';
+import Orderdetail from '@components/general/order/Orderdetail';
+import Imageslide from '@components/general/Imageslide';
 import AuthScenes from './auth';
 import TabsScenes from './tabs';
 
 /* Routes ==================================================================== */
 export default Actions.create(
   <Scene key={'root'} {...AppConfig.navbarProps}>
-    {/*<Scene
+    {/* <Scene
       hideNavBar
       key={'splash'}
-      component={AuthScenes}
+      component={Lastregister}
       analyticsDesc={'AppLaunch: Launching App'}
-    />*/}
+    />     */}
 
     {/* Auth */}
-    {/*{AuthScenes}*/}
+    {/* {AuthScenes} */}
 
     {/* Main App */}
-    <Scene key={'app'} {...AppConfig.navbarProps} title={AppConfig.appName} hideNavBar={false} type={ActionConst.RESET}>
+    <Scene key={'app'} {...AppConfig.navbarProps} title={AppConfig.appName} hideNavBar={false} type={ActionConst.RESET} >
       {/* Drawer Side Menu */}
-      <Scene key={'home'} component={Drawer} initial={'tabBar'}>
+      <Scene key={'home'} component={Drawer}   >
         {/* Tabbar */}
         {TabsScenes}
+
+        {/* General */}
+        <Scene
+          clone
+          key={'comingSoon'}
+          title={'Coming Soon'}
+          component={Placeholder}
+          analyticsDesc={'Placeholder: Coming Soon'}
+        />
+
+
+
+        <Scene
+          clone
+          key={'login'}
+          component={Login}
+          analyticsDesc={'Login'}
+        />
+
+        <Scene
+          clone
+          key={'otp'}
+          component={Otp}
+          analyticsDesc={'Otp'}
+        />
+
+
+        <Scene
+          clone
+          key={'lastregister'}
+          component={Lastregister}
+          analyticsDesc={'Lastregister'}
+        />
+
+
+        <Scene
+          clone
+          key={'verifyotp'}
+          component={Verifyotp}
+          analyticsDesc={'Verifyotp'}
+        />
+
+
+        <Scene
+          clone
+          key={'shopdetail'}
+          component={Shopdetail}
+          analyticsDesc={'Shopdetail'}
+        />
+
+        <Scene
+          clone
+          key={'imageslide'}
+          component={Imageslide}
+          analyticsDesc={'imageslide'}
+        />
+
+
+
+
+        <Scene
+          clone
+          key={'map'}
+          title={'ระบุตำแหน่งจัดส่ง'}
+          component={Map}
+          analyticsDesc={'Map'}
+        />
+
+
+
+        <Scene
+          clone
+          key={'orderdetail'}
+          component={Orderdetail}
+          analyticsDesc={'Orderdetail'}
+        />
+
+
+
+        <Scene
+          clone
+          key={'basket'}
+          title={'รายการของคุณ'}
+          component={Basket}
+          analyticsDesc={'Basket'}
+        />
+
+        <Scene
+          clone
+          key={'shippingaddress'}
+          component={Shippingaddress}
+          analyticsDesc={'Shippingaddress'}
+        />
+
+        <Scene
+          clone
+          key={'shippingaddresslist'}
+          component={Shippingaddresslist}
+          analyticsDesc={'shippingaddresslist'}
+        />
+
+
+
+
+
       </Scene>
 
-      {/* General */}
-      <Scene
-        clone
-        key={'comingSoon'}
-        title={'Coming Soon'}
-        component={Placeholder}
-        analyticsDesc={'Placeholder: Coming Soon'}
-      />
 
 
-      <Scene
-        clone
-        key={'inputdetail'} 
-        component={Outcome}
-        analyticsDesc={'Placeholder: Coming Soon'}
-      />
 
 
     </Scene>

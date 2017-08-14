@@ -8,13 +8,13 @@
 const app = {
   background: '#F7F9FB',
   cardBackground: '#FFFFFF',
-  listItemBackground: '#FFFFFF',
+  listItemBackground: '#ddd',
 };
 
 const brand = {
   brand: {
-    primary: '#27AE60',
-    secondary: '#F1C40F',
+    primary: '#00B16A',
+    secondary: '#00B16A',
   },
 };
 
@@ -26,14 +26,14 @@ const text = {
 };
 
 const borders = {
-  border: '#ECF0F1',
+  border: '#FAFAFA',
 };
 
 const tabbar = {
   tabbar: {
-    background: '#ffffff',
-    iconDefault: '#BABDC2',
-    iconSelected: brand.brand.primary,
+    background: '#FAFAFA',
+    iconDefault: '#BFBFBF',
+    iconSelected: '#00B16A',
   },
 };
 

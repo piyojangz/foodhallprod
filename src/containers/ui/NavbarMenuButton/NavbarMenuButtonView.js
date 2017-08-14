@@ -8,16 +8,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import {Actions} from 'react-native-router-flux';
 /* Component ==================================================================== */
-const NavbarMenuButton = ({ toggleSideMenu, user }) => (
+const NavbarMenuButton = () => (
   <TouchableOpacity
-    onPress={toggleSideMenu}
+    onPress={Actions.map}
     activeOpacity={0.7}
     style={{ top: -2 }}
     hitSlop={{ top: 7, right: 7, bottom: 7, left: 7 }}
   >
-    <Icon name={(user && user.email) ? 'ios-contact' : 'ios-contact-outline'} size={30} color={'#FFF'} />
+    <Icon name={'ios-navigate-outline'} size={30} color={'#FFF'} />
   </TouchableOpacity>
 );
 

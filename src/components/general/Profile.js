@@ -4,7 +4,8 @@
  * React Native Starter App
  * https://github.com/mcnamee/react-native-starter-app
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   Alert,
@@ -12,13 +13,13 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Image
+  Image,
+  Platform, AsyncStorage
 } from 'react-native';
-import {TabViewAnimated, TabBar} from 'react-native-tab-view';
-import {SocialIcon} from 'react-native-elements';
-import {Actions} from 'react-native-router-flux';
-import {AppSizes} from '@theme/';
-import GridView from 'react-native-easy-gridview';
+import NavigationBar from 'react-native-navigation-bar';
+import { TabViewAnimated, TabBar } from 'react-native-tab-view';
+import { SocialIcon } from 'react-native-elements';
+import { Actions } from 'react-native-router-flux';
 // Components
 import {
   Alerts,
@@ -31,10 +32,14 @@ import {
   FormInput,
   FormLabel
 } from '@components/ui/';
+import SleekLoadingIndicator from 'react-native-sleek-loading-indicator';
+import { FBLoginManager } from 'react-native-facebook-login';
 import Icon from 'react-native-vector-icons/Ionicons';
 // Consts and Libs
-import {AppColors, AppStyles} from '@theme/';
-
+import { AppColors, AppStyles, AppSizes } from '@theme/';
+import * as appdataActions from '@redux/appdata/actions';
+// Actions
+import * as RecipeActions from '@redux/recipes/actions';
 /* Styles ==================================================================== */
 const styles = StyleSheet.create({
   // Tab Styles
@@ -60,24 +65,16 @@ const styles = StyleSheet.create({
   }
 });
 
-const dummyData1 = [
-  {
-    title: 'ล่องแพรกาญฯ',
-    budget: '35,700.00',
-    datetime: '17/07/2559',
-    img: require('../../assets/images/bgupcomming1.png')
-  }, {
-    title: 'ปรสิตทัวร์เชียงราย',
-    budget: '35,700.00',
-    datetime: '17/07/2559',
-    img: require('../../assets/images/bgupcomming2.png')
-  }, {
-    title: 'ทริปเขาใหญ่',
-    budget: '35,700.00',
-    datetime: '17/07/2559',
-    img: require('../../assets/images/bgupcomming3.png')
-  }
-];
+
+const mapStateToProps = state => ({
+  _shippingaddress: state.appdataReducer.shippingaddress,
+  _user: state.appdataReducer.user
+});
+
+const mapDispatchToProps = {
+  shippingaddress: appdataActions.shippingaddress,
+  user: appdataActions.user
+};
 
 /* Component ==================================================================== */
 class Profile extends Component {
@@ -95,101 +92,70 @@ class Profile extends Component {
     });
 
     this.state = {
-      navigation: {
-        index: 0,
-        routes: [
-          {
-            key: '0',
-            title: 'UPCOMMING'
-          }, {
-            key: '1',
-            title: 'FRIENDS'
-          }
-        ]
-      },
-      dataSource: ds.cloneWithRows(dummyData1),
-      friendsdataSource: dsFrienss.cloneWithRows([
-        {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/17951974_10209166209418' +
-              '600_2570895280591768149_n.jpg?oh=068031dd46a0abe290dd2698937ed146&oe=59CCEDC2',
-          id: 1,
-          name: 'Breeshy Sama'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/16299342_10202411016393' +
-              '042_2838505399580246052_n.jpg?oh=7d665d0985f500fb4c19663f05d11c65&oe=59CC3419',
-          id: 2,
-          name: 'Zippy Jantaban'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/12718016_10156713327080' +
-              '109_5014114178575552522_n.jpg?oh=d596efeb29b0ba5daee14c8626e311ad&oe=59CE6675',
-          id: 3,
-          name: 'Chunnamon Sung'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/17952758_15553478544892' +
-              '12_4415242171106257259_n.jpg?oh=432404d91c22321836fa908fda1cbf05&oe=5A0AB37E',
-          id: 4,
-          name: 'Peijang Kyo'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/18447040_10203440131920' +
-              '820_600142454750478436_n.jpg?oh=8fd391d499fa20bf7180f81fb1aa214d&oe=59C9F2D0',
-          id: 5,
-          name: 'Medsine'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/16299342_10202411016393' +
-              '042_2838505399580246052_n.jpg?oh=7d665d0985f500fb4c19663f05d11c65&oe=59CC3419',
-          id: 2,
-          name: 'Zippy Jantaban'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/12718016_10156713327080' +
-              '109_5014114178575552522_n.jpg?oh=d596efeb29b0ba5daee14c8626e311ad&oe=59CE6675',
-          id: 3,
-          name: 'Chunnamon Sung'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/17952758_15553478544892' +
-              '12_4415242171106257259_n.jpg?oh=432404d91c22321836fa908fda1cbf05&oe=5A0AB37E',
-          id: 4,
-          name: 'Peijang Kyo'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/18447040_10203440131920' +
-              '820_600142454750478436_n.jpg?oh=8fd391d499fa20bf7180f81fb1aa214d&oe=59C9F2D0',
-          id: 5,
-          name: 'Medsine'
-        }
-        , {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/16299342_10202411016393' +
-              '042_2838505399580246052_n.jpg?oh=7d665d0985f500fb4c19663f05d11c65&oe=59CC3419',
-          id: 2,
-          name: 'Zippy Jantaban'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/12718016_10156713327080' +
-              '109_5014114178575552522_n.jpg?oh=d596efeb29b0ba5daee14c8626e311ad&oe=59CE6675',
-          id: 3,
-          name: 'Chunnamon Sung'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/17952758_15553478544892' +
-              '12_4415242171106257259_n.jpg?oh=432404d91c22321836fa908fda1cbf05&oe=5A0AB37E',
-          id: 4,
-          name: 'Peijang Kyo'
-        }, {
-          img: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/18447040_10203440131920' +
-              '820_600142454750478436_n.jpg?oh=8fd391d499fa20bf7180f81fb1aa214d&oe=59C9F2D0',
-          id: 5,
-          name: 'Medsine'
-        }
-      ])
+      loading: false,
+      userdetail: undefined,
+      shippingaddress: undefined
     };
   }
 
-  /**
-    * On Change Tab
-    */
-  handleChangeTab = (index) => {
-    this.setState({
-      navigation: {
-        ...this.state.navigation,
-        index
+  componentWillReceiveProps(props) {
+    AsyncStorage.getItem("userdetail").then((value) => {
+      if (value != null) {
+        this.setState({ userdetail: JSON.parse(value) }); 
+        this.setState({ shippingaddress: this.props._user.address });
       }
-    });
+    }).done();
+  }
+
+  componentWillMount() {
+    this.setState({ userdetail: this.props._user });
+    this.setState({ shippingaddress: this.props._user.address });
+  }
+
+
+  logout() {
+
+    // Works on both iOS and Android
+    Alert.alert(
+      'Foodhall Message',
+      'คุณต้องการออกจากระบบ?',
+      [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: 'OK', onPress: () => {
+            this.setState({ loading: true, });
+            FBLoginManager.logout(function (error, data) {
+              if (!error) {
+              } else {
+                console.log(error, data);
+              }
+            });
+            AsyncStorage.setItem("userdetail", JSON.stringify({
+              tel: ''
+              , email: ''
+              , name: ''
+              , islogin: 0
+              , address: ''
+              , id: ''
+              , fbid: ''
+            }));
+            this.setState({
+              loading: false,
+              userdetail: {
+                tel: ''
+                , email: ''
+                , name: ''
+                , address: ''
+                , islogin: 0
+                , id: ''
+                , fbid: ''
+              }
+            });
+          }
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   renderRow = (data, sectionID) => (
@@ -197,36 +163,36 @@ class Profile extends Component {
     <TouchableOpacity
       onPress={Actions.comingSoon}
       style={{
-      marginBottom: 5
-    }}>
+        marginBottom: 5
+      }}>
       <Image style={styles.backgroundImage} resizeMode={"cover"} source={data.img}>
         <View
           style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center'
-        }}>
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}>
           <Text
             style={{
-            textAlign: 'center',
-            fontSize: 18,
-            color: '#ffffff',
-            backgroundColor: 'rgba(0,0,0,0)'
-          }}>{data.title}</Text>
+              textAlign: 'center',
+              fontSize: 18,
+              color: '#ffffff',
+              backgroundColor: 'rgba(0,0,0,0)'
+            }}>{data.title}</Text>
           <Text
             style={{
-            textAlign: 'center',
-            fontSize: 16,
-            color: '#ffffff',
-            backgroundColor: 'rgba(0,0,0,0)'
-          }}>{data.datetime}</Text>
+              textAlign: 'center',
+              fontSize: 16,
+              color: '#ffffff',
+              backgroundColor: 'rgba(0,0,0,0)'
+            }}>{data.datetime}</Text>
           <Text
             style={{
-            textAlign: 'center',
-            fontSize: 24,
-            color: '#ffffff',
-            backgroundColor: 'rgba(0,0,0,0)'
-          }}>{data.budget}</Text>
+              textAlign: 'center',
+              fontSize: 24,
+              color: '#ffffff',
+              backgroundColor: 'rgba(0,0,0,0)'
+            }}>{data.budget}</Text>
         </View>
         <Icon
           name={'ios-arrow-forward-outline'}
@@ -234,11 +200,11 @@ class Profile extends Component {
           rot
           color={'#FFFFFF'}
           style={{
-          position: 'absolute',
-          backgroundColor: 'rgba(0,0,0,0)',
-          right: 10,
-          top: 45
-        }}/>
+            position: 'absolute',
+            backgroundColor: 'rgba(0,0,0,0)',
+            right: 10,
+            top: 45
+          }} />
       </Image>
 
     </TouchableOpacity>
@@ -247,38 +213,29 @@ class Profile extends Component {
   /**
     * Which component to show
     */
-  renderScene = ({route}) => {
+  renderScene = ({ route }) => {
     switch (route.key) {
       case '0':
         return (
           <View style={styles.tabContainer}>
-            <Spacer size={-20}/>
+            <Spacer size={-20} />
             <List>
               <ListView
                 renderRow={this
-                .renderRow
-                .bind(this)}
-                dataSource={this.state.dataSource}/>
+                  .renderRow
+                  .bind(this)}
+                dataSource={this.state.dataSource} />
             </List>
           </View>
         );
       case '1':
         return (
           <View style={styles.tabContainer}>
-            <GridView  
-            style={{marginBottom:20,}}
-              dataSource={this.state.friendsdataSource}
-              renderRow={this
-              .renderFriends
-              .bind(this)}
-              numberOfItemsPerRow={3}
-              removeClippedSubviews={false}
-              initialListSize={1}
-              pageSize={5}/> 
+
           </View>
         )
       default:
-        return (<View/>);
+        return (<View />);
     }
   }
 
@@ -287,25 +244,25 @@ class Profile extends Component {
       <TouchableOpacity
         onPress={Actions.comingSoon}
         style={{
-          margin:1,
-        padding: 5,
-        paddingTop:20,
-        paddingBottom:20, 
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF'
-      }}>
+          margin: 1,
+          padding: 5,
+          paddingTop: 20,
+          paddingBottom: 20,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#FFFFFF'
+        }}>
         <Image
           style={{
-          height: 50,
-          width: 50,
-          borderRadius: 30
-        }}
+            height: 50,
+            width: 50,
+            borderRadius: 30
+          }}
           resizeMode={"cover"}
           source={{
-          uri: rowData.img
-        }}/>
+            uri: rowData.img
+          }} />
         <View style={{
           paddingLeft: 10
         }}>
@@ -324,64 +281,197 @@ class Profile extends Component {
     style={styles.tabbar}
     indicatorStyle={styles.tabbarIndicator}
     renderLabel={scene => (
-    <Text style={[styles.tabbar_text]}>{scene.route.title}</Text>
-  )}/>)
+      <Text style={[styles.tabbar_text]}>{scene.route.title}</Text>
+    )} />)
 
-  render = () => (
-    <View style={[AppStyles.container]}>
-      <View
-        style={{
-        backgroundColor: '#27AE60',
-        alignItems: 'center',
-        flexDirection: 'column'
-      }}>
-        <Image
-          style={{
-          height: 80,
-          width: 80,
-          justifyContent: 'space-between',
-          margin: 3,
-          borderRadius: 40
-        }}
-          resizeMode={"cover"}
-          source={{
-          uri: 'https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-1/p320x320/17951974_10209166209418' +
-              '600_2570895280591768149_n.jpg?oh=068031dd46a0abe290dd2698937ed146&oe=59CCEDC2'
-        }}/>
-        <Text
-          style={{
-          backgroundColor: '#27AE60',
-          fontSize: 18,
-          color: '#FFFFFF',
-          paddingTop: 4
-        }}>Breeshy Sama</Text>
-        <TouchableOpacity onPress={Actions.comingSoon}>
+  rendernavbar() {
+    if (this.state.userdetail.islogin == 1) {
+      return (<NavigationBar
+        title={'Profile'}
+        height={(Platform.OS === 'ios') ? 44 : 64}
+        titleColor={'#fff'}
+        backgroundColor={AppColors.brand.primary}
+        leftButtonTitle={'Map'}
+        leftButtonIcon={require('../../assets/images/ic_compass.png')}
+        onLeftButtonPress={Actions.map}
+        rightButtonTitle={'Logout'}
+        onRightButtonPress={() => this.logout()}
+        leftButtonTitleColor={'#fff'}
+        rightButtonTitleColor={'#fff'}
+      />)
+    }
+    else {
+      return (<NavigationBar
+        title={'Profile'}
+        height={(Platform.OS === 'ios') ? 44 : 64}
+        titleColor={'#fff'}
+        backgroundColor={AppColors.brand.primary}
+        leftButtonTitle={'Map'}
+        leftButtonIcon={require('../../assets/images/ic_compass.png')}
+        onLeftButtonPress={Actions.map}
+        leftButtonTitleColor={'#fff'}
+      />)
+    }
+  }
+
+
+  setaddress(prm) {
+    Actions.shippingaddresslist({ userdetail: prm });
+   // Actions.shippingaddress({ userdetail: prm });
+  }
+
+
+  renderprofile() {
+    if (this.state.userdetail.islogin == 1) {
+      return (
+        <View>
+          <Image
+            style={{
+              height: 250,
+            }}
+            resizeMode={"cover"}
+            source={{
+              uri: 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250'
+            }} />
           <View
             style={{
-            backgroundColor: '#F1C40F',
-            paddingLeft: 25,
-            paddingRight: 25,
-            paddingTop: 8,
-            paddingBottom: 3,
-            borderRadius: 20
-          }}>
+              flexGrow: 1,
+              alignItems: 'flex-start',
+              flexDirection: 'column',
+              padding: 15,
+              paddingTop: 25,
+            }}>
+
             <Text
               style={{
-              color: '#fff',
-              fontSize: 16
-            }}>แก้ไขข้อมูลส่วนตัว</Text>
+                fontSize: 28,
+                color: '#464646',
+                paddingTop: 4,
+                fontWeight: 'normal'
+              }}>{this.state.userdetail.name}</Text>
+
+            <Text
+              style={{
+                fontSize: 16,
+                paddingTop: 15,
+                color: '#464646',
+                fontWeight: 'normal'
+              }}>
+              <Icon
+                name={'md-phone-portrait'}
+                size={20}
+                rot
+                color={'#464646'}
+              />  {this.state.userdetail.tel}</Text>
+
+            <Text
+              style={{
+                fontSize: 16,
+                paddingTop: 15,
+                paddingBottom: 15,
+                color: '#464646',
+                fontWeight: 'normal'
+              }}>
+              <Icon
+                name={'md-pin'}
+                size={20}
+                rot
+                color={'#464646'}
+              />  {this.state.shippingaddress || '-'}</Text>
+
+
+            <TouchableOpacity onPress={() => this.setaddress(this.state.userdetail)}  >
+              <View
+                style={{
+                  backgroundColor: '#F1C40F',
+                  paddingLeft: 35,
+                  paddingRight: 35,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  alignItems: 'center',
+                  borderRadius: 25
+                }}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 18,
+                    fontWeight: 'normal'
+                  }}>แก้ไขที่อยู่สำหรับจัดส่ง</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </View>
-      <TabViewAnimated
-        style={[styles.tabContainer]}
-        renderScene={this.renderScene}
-        renderHeader={this.renderHeader}
-        navigationState={this.state.navigation}
-        onRequestChangeTab={this.handleChangeTab}/>
+        </View>
+      )
+    }
+    else {
+      return (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            padding: 15,
+            paddingTop: 90,
+          }}>
+          <Image
+            style={{
+              height: 150,
+              width: 150,
+            }}
+            resizeMode={"cover"}
+            source={require('../../assets/images/ic_application.png')}
+          />
+          <Text
+            style={{
+              color: '#000',
+              fontSize: 14,
+              lineHeight: 28,
+              fontWeight: "normal",
+              fontFamily: 'Helvetica Neue',
+            }}>
+            หิว...เมื่อไหร่ให้คิดถึง FoodHall
+                  </Text>
+          <TouchableOpacity onPress={Actions.login} multiline={true}>
+            <View
+              style={{
+                marginTop: (25),
+                backgroundColor: '#F1C40F',
+                paddingLeft: 35,
+                paddingRight: 35,
+                paddingTop: 10,
+                paddingBottom: 10,
+                borderRadius: 25
+              }}>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 18
+                }}>เข้าสู่ระบบ / สมัครสมาชิก</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }
+
+
+  render = () => (
+    <View style={{ marginTop: -65 }}>
+      {this.rendernavbar()}
+      <Spacer size={64} />
+
+      <ScrollView style={{ flexGrow: 1, height: (AppSizes.screen.height - 115), }}>
+        {this.renderprofile()}
+        <Spacer size={20} />
+      </ScrollView>
+
+      <SleekLoadingIndicator loading={this.state.loading} />
     </View>
+
   )
 }
 
 /* Export Component ==================================================================== */
-export default Profile;
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+

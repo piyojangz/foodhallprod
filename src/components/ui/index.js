@@ -15,8 +15,7 @@ import List from './List';
 import ListItem from './ListItem';
 import FormInput from './FormInput';
 import FormLabel from './FormLabel';
-import FormValidationMessage from './FormValidationMessage';
-
+import FormValidationMessage from './FormValidationMessage'; 
 export {
   Alerts,
   Button,
@@ -28,5 +27,5 @@ export {
   ListItem,
   FormInput,
   FormLabel,
-  FormValidationMessage,
+  FormValidationMessage, 
 };
