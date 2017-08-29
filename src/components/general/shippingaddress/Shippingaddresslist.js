@@ -166,6 +166,7 @@ class Shippingaddresslist extends Component {
     this.state = {
       loading: false,
       ds: [],
+      addrlist:[],
       dataSource: ds,
       refreshing: false,
       isFollowuser: true,
@@ -266,6 +267,8 @@ class Shippingaddresslist extends Component {
         lat: rowData.lat,
         lng: rowData.lng
       }
+    },()=>{
+      this.setAddress();
     });
   }
 
@@ -276,9 +279,9 @@ class Shippingaddresslist extends Component {
       //this.props.dispatch({ type: 'SHIPPINGADDRESS', shippingaddress: this.state.shippingaddress });
 
       return (<Icon
-      style={{top:20,backgroundColor:'rgba(0,0,0,0)'}}
+        style={{ top: 20, right: 10, backgroundColor: 'rgba(0,0,0,0)' }}
         name={'check'}
-        size={16} 
+        size={16}
         color={'#2C3E50'} />)
     }
     else {
@@ -329,42 +332,53 @@ class Shippingaddresslist extends Component {
   }
 
 
-  renderListView = () => {
-    return (
-      <SwipeListView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh.bind(this)}
-          />
-        }
-        stopLeftSwipe={1}
-        dataSource={this.state.dataSource}
-        renderRow={data => (
-          <TouchableHighlight onPress={() => this.activeAddress(data)}>
-            <View style={styles.rowFront}>
-              <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                <Text>{data.address}</Text>
-                {this.renderChecked(data)}
-              </View>
-            </View>
-          </TouchableHighlight>
-        )}
-        renderHiddenRow={data => (
-          <View style={styles.rowBack}>
-            <Text>Left</Text>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.editRow(data)}>
-              <Text style={{ color: '#fff' }} >แก้ไข</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.deleteRow(data)}>
-              <Text style={{ color: '#fff' }}>ลบ</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        rightOpenValue={-150}
-      />
+  renderListView = () => { 
+    if (this.state.addrlist.length == 0) {
+      return (
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+          <Text style={{ textAlign: 'center', color: '#BFBFBF' }}>ไม่มีรายการ</Text>
+        </View>
+      )
 
-    )
+    }
+    else{
+      return (
+        <SwipeListView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
+          stopLeftSwipe={1}
+          dataSource={this.state.dataSource}
+          renderRow={data => (
+            <TouchableHighlight onPress={() => this.activeAddress(data)}>
+              <View style={styles.rowFront}>
+                <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                  <Text>{data.address}</Text>
+                  {this.renderChecked(data)}
+                </View>
+              </View>
+            </TouchableHighlight>
+          )}
+          renderHiddenRow={data => (
+            <View style={styles.rowBack}>
+              <Text>Left</Text>
+              <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.editRow(data)}>
+                <Text style={{ color: '#fff' }} >แก้ไข</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.deleteRow(data)}>
+                <Text style={{ color: '#fff' }}>ลบ</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          rightOpenValue={-150}
+        />
+  
+      )
+    }
+  
   }
 
   setAddress() {
@@ -385,7 +399,8 @@ class Shippingaddresslist extends Component {
         , name: this.props._user.name
         , id: this.props._user.id
         , address: this.state.shippingaddress.address
-        , fbid: this.props._user.fbid,
+        , fbid: this.props._user.fbid
+        , shopid: this.props._user.shopid,
         activeaddress: this.state.addressid
       }));
 
@@ -451,6 +466,7 @@ class Shippingaddresslist extends Component {
     return new Promise((resolve) => {
       console.log(data);
       this.setState({
+        addrlist:data.result,
         dataSource: this.state.dataSource.cloneWithRows(data.result),
       }, resolve)
     });

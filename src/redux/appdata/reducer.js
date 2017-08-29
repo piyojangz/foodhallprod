@@ -1,6 +1,10 @@
 export const initialState = {
   total: 0,
+  incommingcount: 0,
+  pendingcount: 0,
   log: [],
+  shop: [],
+  shopdetail: [],
   address: {
     city: '',
   },
@@ -21,32 +25,54 @@ export const initialState = {
     , islogin: 0
     , id: ''
     , fbid: ''
-    , activeaddress:0
+    , activeaddress: 0
+    , shopid: ''
   },
 };
 
 export default function appdataReducer(state = initialState, action) {
   switch (action.type) {
     case 'TOTAL':
-      return {
-        ...state,
-        total: state.total + action.total,
-      };
+      if (action.total) {
+        return {
+          ...state,
+          total: state.total + action.total,
+        };
+      }
     case 'ADDRESS':
-      return {
-        ...state,
-        address: action.address,
-      };
+      if (action.address) {
+        return {
+          ...state,
+          address: action.address,
+        };
+      }
     case 'SHIPPINGADDRESS':
-      return {
-        ...state,
-        shippingaddress: action.shippingaddress,
-      };
+      if (action.shippingaddress) {
+        return {
+          ...state,
+          shippingaddress: action.shippingaddress,
+        };
+      }
     case 'USER':
-      return {
-        ...state,
-        user: action.user,
-      };
+      if (action.user) {
+        return {
+          ...state,
+          user: action.user,
+        };
+      }
+    case 'SHOP':
+      if (action.shop) {
+        return {
+          ...state,
+          shop: action.shop,
+        };
+      }
+      if (action.shopdetail) {
+        return {
+          ...state,
+          shopdetail: action.shopdetail,
+        };
+      }
     case 'OTP':
       if (action.otp) {
         return {
@@ -59,6 +85,20 @@ export default function appdataReducer(state = initialState, action) {
         return {
           ...state,
           location: action.location,
+        };
+      }
+    case 'INCOMMINGCOUNT':
+      if (action.incommingcount) {
+        return {
+          ...state,
+          incommingcount: action.incommingcount,
+        };
+      }
+    case 'PENDINGCOUNT':
+      if (action.pendingcount) {
+        return {
+          ...state,
+          pendingcount: action.pendingcount,
         };
       }
       else {

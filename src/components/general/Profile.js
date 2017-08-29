@@ -101,7 +101,7 @@ class Profile extends Component {
   componentWillReceiveProps(props) {
     AsyncStorage.getItem("userdetail").then((value) => {
       if (value != null) {
-        this.setState({ userdetail: JSON.parse(value) }); 
+        this.setState({ userdetail: JSON.parse(value) });
         this.setState({ shippingaddress: this.props._user.address });
       }
     }).done();
@@ -151,6 +151,8 @@ class Profile extends Component {
                 , fbid: ''
               }
             });
+
+            Actions.explore();
           }
         },
       ],
@@ -284,6 +286,19 @@ class Profile extends Component {
       <Text style={[styles.tabbar_text]}>{scene.route.title}</Text>
     )} />)
 
+  swaptoshop() {
+    if (this.state.userdetail.shopid == null) {
+      Actions.introduceshop();
+    }
+    else {
+      AsyncStorage.setItem("mode", JSON.stringify({
+        shopmode: 1
+      }));
+      Actions.shopscene();
+    }
+
+  }
+
   rendernavbar() {
     if (this.state.userdetail.islogin == 1) {
       return (<NavigationBar
@@ -291,12 +306,8 @@ class Profile extends Component {
         height={(Platform.OS === 'ios') ? 44 : 64}
         titleColor={'#fff'}
         backgroundColor={AppColors.brand.primary}
-        leftButtonTitle={'Map'}
-        leftButtonIcon={require('../../assets/images/ic_compass.png')}
-        onLeftButtonPress={Actions.map}
-        rightButtonTitle={'Logout'}
-        onRightButtonPress={() => this.logout()}
-        leftButtonTitleColor={'#fff'}
+        rightButtonTitle={'ร้านค้า'}
+        onRightButtonPress={() => this.swaptoshop()}
         rightButtonTitleColor={'#fff'}
       />)
     }
@@ -306,10 +317,6 @@ class Profile extends Component {
         height={(Platform.OS === 'ios') ? 44 : 64}
         titleColor={'#fff'}
         backgroundColor={AppColors.brand.primary}
-        leftButtonTitle={'Map'}
-        leftButtonIcon={require('../../assets/images/ic_compass.png')}
-        onLeftButtonPress={Actions.map}
-        leftButtonTitleColor={'#fff'}
       />)
     }
   }
@@ -317,21 +324,24 @@ class Profile extends Component {
 
   setaddress(prm) {
     Actions.shippingaddresslist({ userdetail: prm });
-   // Actions.shippingaddress({ userdetail: prm });
+    // Actions.shippingaddress({ userdetail: prm });
   }
 
 
   renderprofile() {
     if (this.state.userdetail.islogin == 1) {
+      console.log(this.state.userdetail.fbid);
+      var profileimg = (this.state.userdetail.fbid == '' ? 'http://leafood.servewellsolution.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250');
       return (
         <View>
           <Image
+            ref={'profileimg'}
             style={{
               height: 250,
             }}
             resizeMode={"cover"}
             source={{
-              uri: 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250'
+              uri: profileimg
             }} />
           <View
             style={{
@@ -344,11 +354,11 @@ class Profile extends Component {
 
             <Text
               style={{
-                fontSize: 28,
+                fontSize: 24,
                 color: '#464646',
                 paddingTop: 4,
                 fontWeight: 'normal'
-              }}>{this.state.userdetail.name}</Text>
+              }}>สวัสดี {this.state.userdetail.name}</Text>
 
             <Text
               style={{
@@ -377,7 +387,7 @@ class Profile extends Component {
                 size={20}
                 rot
                 color={'#464646'}
-              />  {this.state.shippingaddress || '-'}</Text>
+              />  {this.state.shippingaddress || '* กรุณาเพิ่มที่อยู่'}</Text>
 
 
             <TouchableOpacity onPress={() => this.setaddress(this.state.userdetail)}  >
@@ -396,7 +406,104 @@ class Profile extends Component {
                     color: '#fff',
                     fontSize: 18,
                     fontWeight: 'normal'
-                  }}>แก้ไขที่อยู่สำหรับจัดส่ง</Text>
+                  }}>เพิ่ม/แก้ไขที่อยู่สำหรับจัดส่ง</Text>
+              </View>
+            </TouchableOpacity>
+
+            <Spacer size={10} />
+            
+            <View
+              style={{
+
+                paddingTop: 30,
+                paddingBottom: 10,
+              }}>
+              <Text
+                style={{
+                  color: '#000',
+                  fontSize: 18,
+                  fontWeight: 'normal'
+                }}>ติดต่อเรา</Text>
+
+
+              <View
+                style={{
+                  width:AppSizes.screen.width,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between', 
+                  paddingRight:50,
+                  paddingLeft:10,
+                  paddingBottom: 10,
+                }}>
+
+
+
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                  }}>
+
+                  <Text
+                    style={{
+                      color: '#BDC3C7',
+                      fontSize: 14,
+                      fontWeight: 'normal'
+                    }}>LINE</Text>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontSize: 14,
+                      fontWeight: 'normal'
+                    }}>@foodhall</Text>
+
+                </View>
+
+
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                  }}>
+
+                  <Text
+                    style={{
+                      color: '#BDC3C7',
+                      fontSize: 14,
+                      fontWeight: 'normal'
+                    }}>เบอร์โทร</Text>
+                  <Text
+                    style={{
+                      color: '#000',
+                      fontSize: 14,
+                      fontWeight: 'normal'
+                    }}>086-364-7397</Text>
+
+                </View>
+
+
+
+              </View>
+            </View>
+            <TouchableOpacity onPress={() => this.logout()}  >
+              <View
+                style={{
+                  backgroundColor: '#F64747',
+                  paddingLeft: 35,
+                  paddingRight: 35,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  alignItems: 'center',
+                  borderRadius: 25
+                }}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 18,
+                    fontWeight: 'normal'
+                  }}>ออกจากระบบ</Text>
               </View>
             </TouchableOpacity>
           </View>

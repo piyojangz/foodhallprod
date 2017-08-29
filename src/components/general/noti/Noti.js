@@ -249,10 +249,10 @@ class Noti extends Component {
                 fontSize: 14,
               }}>วันที่สั่งซื้อ {createdate}</Text>
               <View style={{ flexDirection: 'row' }}>
-                <Icon style={{ fontSize: 14, color: color,paddingTop:5 }} name='bell-o' />
+                <Icon style={{ fontSize: 14, color: color, paddingTop: 5 }} name='bell-o' />
                 <Text style={{
                   color: color,
-                  fontSize: 14, 
+                  fontSize: 14,
                 }}> {status}</Text>
               </View>
               <Spacer size={5} />
@@ -289,7 +289,7 @@ class Noti extends Component {
         <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
         <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
         <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='motorcycle' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> บริการส่งถึงที่</Text>
+        <Text style={{ fontSize: 14, color: "#E67E22", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
       </View>)
     }
 

@@ -152,7 +152,7 @@ class Map extends Component {
   propAddress() {
     AsyncStorage.setItem("userlocation", JSON.stringify(this.state.position));
     this.props.dispatch({ type: 'LOCATION', location: this.state.position });
-    Actions.pop({ refresh: { locationReload: true } });
+    Actions.pop({ refresh: { locationReload: true, location: this.state.position } });
     this
       .props
       .dispatch({ type: 'ADDRESS', address: this.state.address });

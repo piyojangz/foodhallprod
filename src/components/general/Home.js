@@ -114,8 +114,10 @@ class Home extends Component {
       refreshing: false,
       hasloc: false,
       dataSource: ds,
-      location: undefined
+      location: undefined,
+
     }
+
 
 
   }
@@ -123,6 +125,8 @@ class Home extends Component {
   onItemClicked(data) {
     Actions.shopdetail({ shopdetail: data });
   }
+
+
   _onRefresh() {
     this.setState({ refreshing: true });
     this._loadInitialDataAsync().then((data) => {
@@ -197,6 +201,8 @@ class Home extends Component {
       });
   }
 
+ 
+
   componentWillMount() {
     AsyncStorage.getItem("userdetail").then((value) => {
       if (value != null) {
@@ -206,6 +212,7 @@ class Home extends Component {
             type: 'USER', user: JSON.parse(value)
           });
       }
+
 
       if (Platform.OS === "ios") {
         PushNotificationIOS.requestPermissions();
@@ -236,6 +243,7 @@ class Home extends Component {
 
 
   componentDidMount = () => {
+
     // Show status bar on app launch
     StatusBar.setHidden(false);
 
@@ -257,6 +265,9 @@ class Home extends Component {
         // store fcm token in your server
       });
     }
+
+
+
   }
 
 
@@ -390,7 +401,7 @@ class Home extends Component {
   renderShop = (data) => {
     return (
       <TouchableWithoutFeedback onPress={() => this.onItemClicked(data)} >
-        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+        <View style={{ justifyContent: 'space-between', flexDirection: 'row',paddingLeft:15,paddingRight:15, }}>
           <Image
             style={{
               height: 130,
@@ -413,7 +424,7 @@ class Home extends Component {
             source={{
               uri: AppConfig.imgaddress + data.items[0].img
             }} >
-            <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View>
+            {/* <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View> */}
           </Image>
 
           <Image
@@ -427,7 +438,7 @@ class Home extends Component {
             source={{
               uri: AppConfig.imgaddress + data.items[1].img
             }}>
-            <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View>
+            {/* <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View> */}
           </Image>
 
           <Image
@@ -441,7 +452,7 @@ class Home extends Component {
             source={{
               uri: AppConfig.imgaddress + data.items[2].img
             }} >
-            <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View>
+            {/* <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View> */}
           </Image>
 
           <Image
@@ -455,7 +466,7 @@ class Home extends Component {
             source={{
               uri: AppConfig.imgaddress + data.items[3].img
             }} >
-            <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View>
+            {/* <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View> */}
           </Image>
           <Image
             style={{
@@ -468,7 +479,7 @@ class Home extends Component {
             source={{
               uri: AppConfig.imgaddress + data.items[4].img
             }}>
-            <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View>
+            {/* <View style={{ position: 'absolute', bottom: 5, right: 5, backgroundColor: '#000', opacity: 0.5, paddingLeft: 10, paddingRight: 10, borderRadius: 8, }}><Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'normal' }}>{numberWithCommas(data.items[0].price) + ' ฿'}</Text></View> */}
           </Image>
         </View>
       </TouchableWithoutFeedback>
@@ -486,7 +497,7 @@ class Home extends Component {
     if (data.id == 0) {
       return (
         <View style={{ marginBottom: 5, }}>
-          <ImageSlider height={200} images={data.images} />
+          <ImageSlider height={210} images={data.images} />
         </View>)
     }
     else {
@@ -502,7 +513,7 @@ class Home extends Component {
               </View>
             </View>
           </TouchableWithoutFeedback>
-          <ScrollView toc horizontal={true} showsHorizontalScrollIndicator={false} contentInset={{ left: 15, right: 15, }} contentOffset={{ x: -15 }} automaticallyAdjustContentInsets={false} >
+          <ScrollView   horizontal={true} showsHorizontalScrollIndicator={false}   automaticallyAdjustContentInsets={false} >
             {this.renderShop(data)}
           </ScrollView>
           <TouchableWithoutFeedback onPress={() => this.onItemClicked(data)} >
@@ -628,8 +639,7 @@ class Home extends Component {
   }
 
   async _onReadyAsync(data) {
-    return new Promise((resolve) => {
-      console.log(data.result);
+    return new Promise((resolve) => { 
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(data.result)
       }, resolve);

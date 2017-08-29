@@ -44,7 +44,7 @@ class CustomButton extends Component {
       onPress: this.props.onPress,
       fontFamily: AppFonts.base.family,
       fontSize: AppFonts.base.size,
-      borderRadius: AppSizes.borderRadius,
+      borderRadius: this.props.borderRadius || AppSizes.borderRadius,
       raised: true,
       buttonStyle: {
         padding: 12,
@@ -55,6 +55,7 @@ class CustomButton extends Component {
       },
       ...this.props,
       backgroundColor: this.props.backgroundColor || AppColors.brand.primary,
+      borderColor: this.props.borderColor || AppColors.brand.primary,
       small: false,
       large: false,
       icon: (this.props.icon && this.props.icon.name)
@@ -93,9 +94,9 @@ class CustomButton extends Component {
     if (this.props.outlined) {
       props.raised = false;
       props.backgroundColor = this.props.backgroundColor || 'transparent';
-      props.color = AppColors.brand.primary;
+      props.color = this.props.color;
       props.buttonStyle.borderWidth = 1;
-      props.buttonStyle.borderColor = AppColors.brand.primary;
+      props.buttonStyle.borderColor = this.props.borderColor;
 
       if (props.icon && props.icon.name) {
         props.icon = {

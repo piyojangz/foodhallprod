@@ -15,6 +15,7 @@ const brand = {
   brand: {
     primary: '#00B16A',
     secondary: '#00B16A',
+    shopprimary: '#019875'
   },
 };
 
@@ -34,6 +35,7 @@ const tabbar = {
     background: '#FAFAFA',
     iconDefault: '#BFBFBF',
     iconSelected: '#00B16A',
+    iconSelectedShop: '#019875',
   },
 };
 

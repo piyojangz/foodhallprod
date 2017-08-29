@@ -86,13 +86,11 @@ const mapDispatchToProps = {
 };
 
 
-const images = [{
-  url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460'
-}, {
-  url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460'
-}, {
-  url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460'
-}]
+
+
+
+
+
 
 
 class Imageslide extends Component {
@@ -110,7 +108,15 @@ class Imageslide extends Component {
 
 
 
+
+
+
+
   render = () => {
+    const images = [];
+    images.push({
+      url: this.props.img
+    });
     return (
       <View style={[AppStyles.container]}>
         <NavigationBar
@@ -130,7 +136,7 @@ class Imageslide extends Component {
                 <ImageViewer imageUrls={images}/>
             </Modal> */}
 
-          <ImageViewer imageUrls={images}/>
+          <ImageViewer imageUrls={images} />
         </View>
       </View>
 

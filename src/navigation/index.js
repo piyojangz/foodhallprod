@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { Actions, Scene, ActionConst } from 'react-native-router-flux';
-
+import { connect } from 'react-redux';
 // Consts and Libs
 import { AppConfig } from '@constants/';
 
@@ -29,8 +29,17 @@ import Shippingaddress from '@components/general/shippingaddress/Shippingaddress
 import Shippingaddresslist from '@components/general/shippingaddress/Shippingaddresslist';
 import Orderdetail from '@components/general/order/Orderdetail';
 import Imageslide from '@components/general/Imageslide';
+import Setting from '@components/shop/Setting';
 import AuthScenes from './auth';
 import TabsScenes from './tabs';
+import ShopScenes from './shop';
+import Additem from '@components/shop/Additem';
+import Addcover from '@components/shop/Addcover';
+import Introduceshop from '@components/shop/Introduceshop';
+import Shopfirstsetting from '@components/shop/Shopfirstsetting';
+import Dopurchase from '@components/shop/Dopurchase';
+import Shoporderdetail from '@components/shop/Shoporderdetail';
+import Redeemsuccess from '@components/shop/Redeemsuccess';
 
 /* Routes ==================================================================== */
 export default Actions.create(
@@ -43,7 +52,14 @@ export default Actions.create(
     />     */}
 
     {/* Auth */}
-    {/* {AuthScenes} */}
+    {/* {AuthScenes}   */}
+    <Scene
+      hideNavBar
+      key={'splash'}
+      component={AppLaunch}
+      analyticsDesc={'AppLaunch: Launching App'}
+    />
+
 
     {/* Main App */}
     <Scene key={'app'} {...AppConfig.navbarProps} title={AppConfig.appName} hideNavBar={false} type={ActionConst.RESET} >
@@ -129,6 +145,13 @@ export default Actions.create(
         />
 
 
+        <Scene
+          clone
+          key={'shoporderdetail'}
+          component={Shoporderdetail}
+          analyticsDesc={'Shoporderdetail'}
+        />
+
 
         <Scene
           clone
@@ -137,6 +160,28 @@ export default Actions.create(
           component={Basket}
           analyticsDesc={'Basket'}
         />
+
+
+
+        <Scene
+          clone
+          key={'additem'}
+          title={'รายการของคุณ'}
+          component={Additem}
+          analyticsDesc={'Additem'}
+        />
+
+
+        <Scene
+          clone
+          key={'addcover'}
+          title={'รายการของคุณ'}
+          component={Addcover}
+          analyticsDesc={'Addcover'}
+        />
+
+
+
 
         <Scene
           clone
@@ -153,7 +198,54 @@ export default Actions.create(
         />
 
 
+        <Scene
+          clone
+          key={'shopsetting'}
+          title={'ตั้งค่า'}
+          component={Setting}
+          analyticsDesc={'Shopsetting'}
+        />
 
+
+
+        <Scene
+          clone
+          key={'shopfirstsetting'}
+          title={'ตั้งค่า'}
+          component={Shopfirstsetting}
+          analyticsDesc={'Shopfirstsetting'}
+        />
+
+
+        <Scene
+          clone
+          key={'dopurchase'}
+          title={'ซื้อเหรียญ'}
+          component={Dopurchase}
+          analyticsDesc={'Dopurchase'}
+        />
+
+
+
+        <Scene
+          clone
+          key={'redeemsuccess'}
+          component={Redeemsuccess}
+          analyticsDesc={'Redeemsuccess'}
+        />
+
+
+
+
+        <Scene
+          clone
+          hideNavBar
+          hideTabBar
+          key={'introduceshop'}
+          title={'แนะนำการเปิดร้าน'}
+          component={Introduceshop}
+          analyticsDesc={'Introduceshop'}
+        />
 
 
       </Scene>
@@ -163,5 +255,8 @@ export default Actions.create(
 
 
     </Scene>
+
+    {ShopScenes}
+
   </Scene>,
 );

@@ -56,7 +56,7 @@ const scenes = (
 
     <Scene
       {...navbarPropsTabs}
-      key={'explore'} 
+      key={'explore'}
       hideNavBar={true}
       title={'EXPLORE'}
       component={Home}
@@ -68,14 +68,14 @@ const scenes = (
 
 
 
-<Scene
+    <Scene
       {...navbarPropsTabs}
-      key={'noti'} 
+      key={'noti'}
       hideNavBar={true}
       title={'Order'}
       component={Noti}
       icon={props => TabIcon({
-        ...props, 
+        ...props,
         icon: 'alarm',
         title: 'ORDER'
       })} />
@@ -95,7 +95,7 @@ const scenes = (
       analyticsDesc={'Error: Example Error'} /> */}
 
 
-<Scene
+    <Scene
       {...navbarPropsTabs}
       key={'profile'}
       hideNavBar={true}
@@ -106,7 +106,7 @@ const scenes = (
         icon: 'face',
         title: 'PROFILE'
       })} />
- 
+
   </Scene>
 );
 

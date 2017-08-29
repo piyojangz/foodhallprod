@@ -114,79 +114,123 @@ class Otp extends Component {
     };
   }
 
+  checkdupplicatetel(tel){
+    var params = {
+      tel: tel,
+    };
+    var formData = new FormData();
+    for (var k in params) {
+      formData.append(k, params[k]);
+    }
+    var request = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: formData
+    };
 
-  sendotp() { 
+    fetch(AppConfig.api + 'api/checktel', request).then((response) => {
+      return response.json() // << This is the problem
+    })
+      .then((responseData) => { // responseData = undefined 
+        return responseData;
+      })
+      .then((data) => { 
+          console.log(data.result);
+        if (data.result == true) {
+          Alert.alert(
+            'Warning',
+            'มีเบอร์โทรนี้ในระบบแล้ว',
+            [
+              { text: 'รับทราบ', onPress: () => console.log('Cancel Pressed'), style: 'cancel' }, 
+            ],
+            { cancelable: false }
+          )
+        }
+        else {
+          this.setState({ loading: true, });
+  
+          var params = {
+            tel: tel,
+          };
+          var formData = new FormData();
+          for (var k in params) {
+            formData.append(k, params[k]);
+          }
+          var request = {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+            },
+            body: formData
+          };
+  
+  
+          var fromTime = this.props._otp;
+          var toTime = new Date();
+          var intime = false;
+          if (fromTime == undefined) {
+            fromTime = new Date();
+            this.props.dispatch({ type: 'OTP', otp: fromTime });
+            intime = true;
+          }
+          else {
+            this.setState({ loading: false, });
+            var differenceTravel = toTime.getTime() - fromTime.getTime();
+            var seconds = Math.floor((differenceTravel) / (1000));
+            if (seconds < 60) {
+              intime = false;
+              if (Platform.OS === "ios") {
+                Alert.alert(
+                  'Warning!',
+                  'กรุณาลองใหม่อีกครั้งในอีก ' + (60 - seconds) + ' วินาที'
+                );
+              }
+              else {
+                ToastAndroid.show('กรุณาลองใหม่อีกครั้งในอีก ' + (60 - seconds) + ' วินาที', ToastAndroid.SHORT);
+              }
+            }
+            else {
+              intime = true;
+            }
+          }
+  
+          if (intime) {
+            fetch(AppConfig.api + 'api/generateOtp', request).then((response) => {
+              this.setState({ loading: false, });
+              return response.json() // << This is the problem
+            })
+              .then((responseData) => { // responseData = undefined
+                this.setState({ loading: false, });
+                return responseData;
+              })
+              .then((data) => {
+                if (data.result == true) {
+                  var fromTime = new Date();
+                  this.props.dispatch({ type: 'OTP', otp: fromTime });
+                  this.setState({ loading: false, });
+                  Actions.verifyotp({ tel: this.state.tel });
+                }
+              }).done();
+          }
+        }
+
+
+
+
+        
+      }).done();
+
+
+  }
+  sendotp() {
     var phoneno = /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/;
     var tel = this.state.tel;
 
-    if (phoneno.test(tel)) {
-
-      this.setState({ loading: true, });
-
-      var params = {
-        tel: tel,
-      };
-      var formData = new FormData();
-      for (var k in params) {
-        formData.append(k, params[k]);
-      }
-      var request = {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json', 
-        },
-        body: formData
-      };
-
-
-      var fromTime = this.props._otp;
-      var toTime = new Date();
-      var intime = false;
-      if (fromTime == undefined) {
-        fromTime = new Date();
-        this.props.dispatch({ type: 'OTP', otp: fromTime });
-        intime = true;
-      }
-      else {
-        this.setState({ loading:false, });
-        var differenceTravel = toTime.getTime() - fromTime.getTime();
-        var seconds = Math.floor((differenceTravel) / (1000));
-        if (seconds < 60) {
-          intime = false;
-          if (Platform.OS === "ios") {
-            Alert.alert(
-              'Warning!',
-              'กรุณาลองใหม่อีกครั้งในอีก ' + (60 - seconds) + ' วินาที'
-            );
-          }
-          else {
-            ToastAndroid.show('กรุณาลองใหม่อีกครั้งในอีก ' + (60 - seconds) + ' วินาที', ToastAndroid.SHORT);
-          }
-        }
-        else {
-          intime = true;
-        }
-      }
-
-      if (intime) {
-        fetch(AppConfig.api + 'api/generateOtp', request).then((response) => {
-          this.setState({ loading: false, });
-          return response.json() // << This is the problem
-        })
-          .then((responseData) => { // responseData = undefined
-            this.setState({ loading: false, });
-            return responseData;
-          })
-          .then((data) => {
-            if (data.result == true) {
-              var fromTime = new Date();
-              this.props.dispatch({ type: 'OTP', otp: fromTime });
-              this.setState({ loading: false, });
-              Actions.verifyotp({ tel: this.state.tel });
-            }
-          }).done();
-      }
-
+    if (phoneno.test(tel)) { 
+     
+      this.checkdupplicatetel(tel);
 
     }
     else {
@@ -224,7 +268,7 @@ class Otp extends Component {
               <View style={{ width: (AppSizes.screen.width - 60), }}>
                 <View style={[AppStyles.paddingHorizontal]}>
                   <FormLabel>เบอร์โทรศัพท์</FormLabel>
-                  <FormInput autoCorrect={false} keyboardType="phone-pad"  placeholder='ระบุเบอร์โทรศัพท์' onChangeText={tel => this.setState({ tel })} />
+                  <FormInput autoCorrect={false} keyboardType="phone-pad" placeholder='ระบุเบอร์โทรศัพท์' onChangeText={tel => this.setState({ tel })} />
 
 
                 </View>

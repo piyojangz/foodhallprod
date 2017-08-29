@@ -22,18 +22,18 @@ import { AppColors } from '@theme/';
 
 
 /* Component ==================================================================== */
-const TabIcon = ({ icon, title, selected }) => {
+const TabIconShop = ({ icon, title, selected }) => {
   return (<View>
     <Icon
       name={icon}
       title={title}
       size={26}
       color={selected
-        ? AppColors.tabbar.iconSelected
+        ? AppColors.tabbar.iconSelectedShop
         : AppColors.tabbar.iconDefault} />
      <Text style={{
       fontSize: 9, color: selected
-        ? AppColors.tabbar.iconSelected
+        ? AppColors.tabbar.iconSelectedShop
         : AppColors.tabbar.iconDefault
     }}>
       {title}
@@ -43,14 +43,14 @@ const TabIcon = ({ icon, title, selected }) => {
 }
 
 
-TabIcon.propTypes = {
+TabIconShop.propTypes = {
   icon: PropTypes.string.isRequired,
   selected: PropTypes.bool
 };
-TabIcon.defaultProps = {
+TabIconShop.defaultProps = {
   icon: 'search',
   selected: false
 };
 
 /* Export Component ==================================================================== */
-export default TabIcon;
+export default TabIconShop;

@@ -16,6 +16,7 @@ import {
   StatusBar,
   StyleSheet,
   ActivityIndicator,
+  AsyncStorage,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
@@ -34,30 +35,36 @@ const styles = StyleSheet.create({
 class AppLaunch extends Component {
   static componentName = 'AppLaunch';
 
-  static propTypes = {
-    login: PropTypes.func.isRequired,
-    getRecipes: PropTypes.func.isRequired,
-    getMeals: PropTypes.func.isRequired,
+
+  gotoShopsetting() {
+    Actions.shopscene();
   }
+
 
   componentDidMount = () => {
     // Show status bar on app launch
     StatusBar.setHidden(false, true);
 
-    // Preload content here
-    Promise.all([
-      this.props.getMeals(),
-      this.props.getRecipes(),
-    ]).then(() => {
-      // Once we've preloaded basic content,
-      // - Try to authenticate based on existing token
-      this.props.login()
-        // Logged in, show index screen
-        .then(() => Actions.app({ type: 'reset' }))
-        // Not Logged in, show Login screen
-        .catch(() => Actions.authenticate({ type: 'reset' }));
-    }).catch(err => Alert.alert(err.message));
+ 
+    AsyncStorage.getItem("mode").then((value) => {
+      
+      if (value != null) {
+        val = JSON.parse(value); 
+        if (val.shopmode == 1) {
+          this.gotoShopsetting();
+        }
+        else {
+          Actions.app();
+        }
+      }
+      else {
+         Actions.app();
+      }
+    });
+
+
   }
+
 
   render = () => (
     <View style={[AppStyles.container]}>
@@ -65,11 +72,7 @@ class AppLaunch extends Component {
         source={require('../../images/launch.jpg')}
         style={[styles.launchImage, AppStyles.containerCentered]}
       >
-        <ActivityIndicator
-          animating
-          size={'large'}
-          color={'#C1C5C8'}
-        />
+
       </Image>
     </View>
   );

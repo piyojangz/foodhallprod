@@ -12,7 +12,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <React/RCTPushNotificationManager.h>
-#import "RNFIRMessaging.h"
+//#import "RNFIRMessaging.h"
 
 @implementation AppDelegate
 

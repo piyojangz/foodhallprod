@@ -15,6 +15,7 @@ import List from './List';
 import ListItem from './ListItem';
 import FormInput from './FormInput';
 import FormLabel from './FormLabel';
+import TabIconShop from './TabIconShop';
 import FormValidationMessage from './FormValidationMessage'; 
 export {
   Alerts,
@@ -28,4 +29,5 @@ export {
   FormInput,
   FormLabel,
   FormValidationMessage, 
+  TabIconShop
 };

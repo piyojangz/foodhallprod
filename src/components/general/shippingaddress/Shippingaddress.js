@@ -452,9 +452,10 @@ class Shippingaddress extends Component {
 
         }}>
           <View
-          >
+          > 
+          
 
-            <FormInput width={250} height={100} multiline={true} value={this.state.shippingaddress} fontSize={16} onChangeText={shippingaddress => this.setState({ shippingaddress })}
+            <FormInput  placeholder={'ระบุที่อยู่ของคุณที่นี่'} width={250} height={100} multiline={true} value={this.state.shippingaddress} fontSize={16} onChangeText={shippingaddress => this.setState({ shippingaddress })}
             />
 
             <TouchableOpacity

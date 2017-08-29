@@ -62,7 +62,7 @@ class CustomFormInput extends Component {
     return props;
   }
 
-  render = () => <FormInput {...this.inputProps()} />
+  render = () => <FormInput {...this.inputProps()}  placeholderTextColor={'#ddd'}/>
 }
 
 /* Export Component ==================================================================== */

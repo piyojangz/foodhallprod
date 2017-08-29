@@ -170,6 +170,7 @@ export default class ImageSlider extends Component {
                 {this.props.images.map((image, index) => {
                     const imageObject = typeof image === 'string' ? { uri: image } : image;
                     const imageComponent = <Image
+                        resizeMode={'cover'}
                         key={index}
                         source={imageObject}
                         style={{ height, width }}

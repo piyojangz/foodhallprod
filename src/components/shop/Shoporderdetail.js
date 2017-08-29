@@ -19,7 +19,6 @@ import {
   RefreshControl,
   PushNotificationIOS,
   Dimensions,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import MapView from 'react-native-maps';
 import LoadingContainer from 'react-native-loading-container';
@@ -87,6 +86,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     flex: .2
   },
+  btn: {
+    backgroundColor: '#ecf0f1',
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    margin: 10,
+    borderRadius: 50,
+  },
+  btntime: {
+    backgroundColor: '#F1C40F',
+    margin: 5,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 5,
+    paddingBottom: 5,
+    alignItems: 'center',
+    borderRadius: 25
+  },
+  texttime: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'normal'
+  }
 });
 
 
@@ -101,8 +124,8 @@ const mapDispatchToProps = {
 };
 
 /* Component ==================================================================== */
-class Orderdetail extends Component {
-  static componentName = 'Orderdetail';
+class Shoporderdetail extends Component {
+  static componentName = 'Shoporderdetail';
 
   constructor(props) {
     super(props);
@@ -280,7 +303,7 @@ class Orderdetail extends Component {
                 color={'#464646'}
               /> สั่งเมื่อ : {moment.utc(this.props.order.createdate).local().format('DD MMM YYYY เวลา HH:mm')}</Text>
 
-<Text
+            <Text
               style={{
                 fontSize: 16,
                 paddingBottom: 15,
@@ -289,7 +312,7 @@ class Orderdetail extends Component {
               }}>
               <Icon
                 name={'plus'}
-                size={14} 
+                size={14}
                 color={'#F00'}
               /> เพิ่มเติม : {this.props.order.additional || '-'}</Text>
             {this.renderOrdertype(this.props.order)}
@@ -306,7 +329,6 @@ class Orderdetail extends Component {
         }}>
           <Grid>
             <Col style={{ width: 96, }}>
-            <TouchableWithoutFeedback onPress={() => Actions.imageslide({ img: AppConfig.imgaddress + rowData.img })} >
               <Image
                 style={{
                   height: 85,
@@ -318,7 +340,6 @@ class Orderdetail extends Component {
                 resizeMode={"cover"}
                 source={{ uri: AppConfig.imgaddress + rowData.img }}
               />
-              </TouchableWithoutFeedback>
             </Col>
             <Col>
               <Row style={{ padding: 8, paddingTop: 0, paddingBottom: 0, }}>
@@ -409,8 +430,8 @@ class Orderdetail extends Component {
           longitude: parseFloat(position.coords.longitude)
         },
         destination: {
-          latitude: parseFloat(this.props.order.shoplat),
-          longitude: parseFloat(this.props.order.shoplng)
+          latitude: parseFloat(this.props.order.lat),
+          longitude: parseFloat(this.props.order.lng)
         },
         params: [
           {
@@ -432,21 +453,255 @@ class Orderdetail extends Component {
 
   }
 
+
+  changeorderstatus(type) {
+    switch (type) {
+      case 'ACCEPT':
+        this.accept();
+        break;
+      case 'REJECT':
+        this.reject();
+        break;
+      case 'DONE':
+        this.done();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+
+  accept() {
+    Alert.alert(
+      'Foodhall Message',
+      'ยืนยันการรับออเดอร์?',
+      [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: 'OK', onPress: () => {
+            this.setState({ loading: true });
+            var params = {
+              orderid: this.props.order.orderid,
+            };
+
+            var formData = new FormData();
+            for (var k in params) {
+              formData.append(k, params[k]);
+            }
+
+            var request = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+              },
+              body: formData
+            };
+
+            console.log(request);
+
+
+
+            fetch(AppConfig.api + 'api/setacceptorder', request).then((response) => {
+              console.log(response);
+              this.setState({ loading: false });
+              return response.json() // << This is the problem
+            })
+              .then((responseData) => { // responseData = undefined
+                console.log(responseData);
+                this.setState({ loading: false });
+                return responseData;
+              })
+              .then((data) => {
+                console.log(data);
+                this.setState({ loading: false });
+
+                Actions.pop({ refresh: { isreload: true } });
+              }).done();
+          }
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  reject() {
+    Alert.alert(
+      'Foodhall Message',
+      'ยืนยันการปฏิเสธออเดอร์?',
+      [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: 'OK', onPress: () => {
+            this.setState({ loading: true });
+
+
+            var params = {
+              orderid: this.props.order.orderid,
+            };
+
+            var formData = new FormData();
+            for (var k in params) {
+              formData.append(k, params[k]);
+            }
+
+            var request = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+              },
+              body: formData
+            };
+
+            console.log(request);
+
+
+
+            fetch(AppConfig.api + 'api/setrejectorder', request).then((response) => {
+              console.log(response);
+              this.setState({ loading: false });
+              return response.json() // << This is the problem
+            })
+              .then((responseData) => { // responseData = undefined
+                console.log(responseData);
+                this.setState({ loading: false });
+                return responseData;
+              })
+              .then((data) => {
+                console.log(data);
+                this.setState({ loading: false });
+
+                Actions.pop({ refresh: { isreload: true } });
+              }).done();
+          }
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  done() {
+    Alert.alert(
+      'Foodhall Message',
+      'ยืนยันการจบรายการ?',
+      [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        {
+          text: 'OK', onPress: () => {
+            this.setState({ loading: true });
+
+
+            var params = {
+              orderid: this.props.order.orderid,
+            };
+
+            var formData = new FormData();
+            for (var k in params) {
+              formData.append(k, params[k]);
+            }
+
+            var request = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+              },
+              body: formData
+            };
+
+            console.log(request);
+
+
+
+            fetch(AppConfig.api + 'api/setcompletedorder', request).then((response) => {
+              console.log(response);
+              this.setState({ loading: false });
+              return response.json() // << This is the problem
+            })
+              .then((responseData) => { // responseData = undefined
+                console.log(responseData);
+                this.setState({ loading: false });
+                return responseData;
+              })
+              .then((data) => {
+                console.log(data);
+                this.setState({ loading: false });
+
+                Actions.pop({ refresh: { isreload: true } });
+              }).done();
+          }
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  renderbtn() {
+    if (this.props.status == 'PENDING') {
+      return (
+        <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'center', flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => this.changeorderstatus('DONE')} >
+            <View
+              style={[styles.btntime, { backgroundColor: '#00B16A' }]}>
+
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 14,
+                  fontWeight: 'normal'
+                }}>  <Icon name={'check'} color={'#FFF'} /> จัดส่งสินค้า / ลูกค้ามารับ เรียบร้อยแล้ว</Text>
+            </View>
+          </TouchableOpacity>
+
+        </View>
+      )
+    }
+    else {
+      return (
+        <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'space-between', flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => this.changeorderstatus('REJECT')} >
+            <View
+              style={[styles.btntime, { backgroundColor: '#D64541' }]}>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 14,
+                  fontWeight: 'normal'
+                }}><Icon name={'close'} color={'#FFF'} /> ปฏิเสธ</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => this.changeorderstatus('ACCEPT')} >
+            <View
+              style={styles.btntime}>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 14,
+                  fontWeight: 'normal'
+                }}><Icon name={'check'} color={'#FFF'} /> ตอบรับ</Text>
+            </View>
+          </TouchableOpacity>
+
+        </View>
+      )
+    }
+  }
+
   render = () => {
     return (<View style={[AppStyles.container]}>
       <NavigationBar
         title={this.props.order.orderno}
         height={(Platform.OS === 'ios') ? 44 : 64}
         titleColor={'#fff'}
-        leftButtonIcon={require('../../../assets/images/ic_left-arrow.png')}
-        backgroundColor={AppColors.brand.primary}
+        leftButtonIcon={require('../../assets/images/ic_left-arrow.png')}
+        backgroundColor={AppColors.brand.shopprimary}
         leftButtonTitle={'back'}
         onLeftButtonPress={Actions.pop}
         leftButtonTitleColor={'#fff'}
         rightButtonTitle={' นำทาง'}
         rightButtonTitleColor={'#fff'}
         onRightButtonPress={this.handleGetDirections}
-        rightButtonIcon={require('../../../assets/images/ic_compass.png')}
+        rightButtonIcon={require('../../assets/images/ic_compass.png')}
       />
 
       <Spacer size={64} />
@@ -460,7 +715,18 @@ class Orderdetail extends Component {
         </LoadingContainer>
       </View>
 
-      <Spacer size={50} />
+      <View style={{
+        backgroundColor: '#FFF', shadowColor: '#BDC3C7',
+        shadowOffset: {
+          width: 0,
+          height: 3
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.4
+      }}>
+        {this.renderbtn()}
+      </View>
+      <Spacer size={51} />
       <SleekLoadingIndicator loading={this.state.loading} />
     </View>
 
@@ -501,5 +767,5 @@ class Orderdetail extends Component {
 }
 
 /* Export Component ==================================================================== */
-export default connect(mapStateToProps, mapDispatchToProps)(Orderdetail);
+export default connect(mapStateToProps, mapDispatchToProps)(Shoporderdetail);
 

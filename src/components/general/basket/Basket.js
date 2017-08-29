@@ -56,8 +56,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf0f1',
     paddingTop: 5,
     paddingBottom: 5,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     margin: 10,
     borderRadius: 50,
   },
@@ -101,6 +101,7 @@ class Basket extends Component {
 
     this.state = {
       ds: [],
+      items: [],
       pickuptime: 0,
       btntimetoogle: false,
       loading: false,
@@ -138,7 +139,7 @@ class Basket extends Component {
     console.log(props);
     AsyncStorage.getItem("userdetail").then((value) => {
       if (value != null) {
-        if (props.Reload) { 
+        if (props.Reload) {
           this.setState({ shippingaddress: props.customshippingaddress.address, shippinglat: props.customshippingaddress.lat, shippinglng: props.customshippingaddress.lng });
         }
         else {
@@ -155,6 +156,10 @@ class Basket extends Component {
     this.setState({ shippingaddress: this.props._user.address, shippinglat: this.props._user.lat, shippinglng: this.props._user.lng });
   }
 
+  componentDidMount() {
+    console.log("this.state.shippingaddress", this.state.shippingaddress);
+  }
+
   onnumpadChange = (rowData, index, type) => {
     var amount = rowData.amount ? rowData.amount : 0;
     if (type == 'minute') {
@@ -166,9 +171,24 @@ class Basket extends Component {
     if (num < 0) {
       num = 0;
     }
-    rowData.amount = num;
-    this.setState({});
-    this.checkAmount();
+
+
+
+    var newArray = this.state.items.slice();
+
+    newArray[index] = {
+      ...newArray[index],
+      amount: num,
+    };
+
+    newArray[newArray.length - 1] = {
+      timestamp: Date.now()
+    }
+
+
+    this.checkAmount(newArray);
+
+
   }
 
 
@@ -180,68 +200,106 @@ class Basket extends Component {
     Actions.shippingaddresslist({ userdetail: prm, issave: true, });
   }
 
-  checkAmount = () => {
+  checkAmount = (newArray) => {
+
     var summary = 0;
     var total = 0;
-    this.state.dataSource._dataBlob.s1.map((data) => {
 
-      if (data != null) {
-        summary += data.price * data.amount;
+    newArray.forEach(function (element) {
+      if (element.timestamp == null) {
+        summary += parseFloat(element.price) * parseFloat(element.amount);
       }
+    }, this);
 
-    });
 
     total = summary + parseInt(this.state.shop.shopdetail.deriveryfee);
 
-    this.setState({ summary: summary, total: total });
+
+    this.setState({
+      items: newArray,
+      summary: summary, total: total
+    }, () => {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(newArray),
+      });
+    });
+
+
 
   }
 
   onItemClicked(ordertype) {
     var user = this.state.userdetail;
     if (user.islogin == 1) {
-      if (parseInt(this.state.summary) <= parseInt(this.state.shop.shopdetail.minprice)) {
-        if (Platform.OS === "ios") {
-          AlertIOS.alert(
-            'FoodHall แจ้งเตือน',
-            'ค่าอาหารต้องมากกว่า ' + this.numberWithCommas(this.state.shop.shopdetail.minprice) + ' บาท',
-            [{
-              text: 'Dismiss',
-              onPress: null,
-            }]
-          );
-        }
-        if (Platform.OS === "android") {
-          ToastAndroid.show('ค่าอาหารต้องมากกว่า ' + this.numberWithCommas(this.state.shop.shopdetail.minprice) + ' บาท', ToastAndroid.SHORT);
-        }
-
-
+      if (this.state.shippingaddress == '') {
+        Alert.alert(
+          'Warning',
+          'กรุณาเพิ่มที่อยู่ก่อนคะ',
+          [
+            { text: 'เอาไว้ที่หลัง', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+            { text: 'เพิ่มเดี๋ยวนี้เลย', onPress: () => this.setaddress(this.state.userdetail) },
+          ],
+          { cancelable: false }
+        )
       }
       else {
-        switch (ordertype) {
-          case 'DELIVERY':
-            Alert.alert(
-              'Warning',
-              'คุณต้องการส่งอาหารให้มาส่งใช่ไหม?',
-              [
-                { text: 'ไม่ใช่', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                { text: 'ใช่', onPress: () => this.sendOrder() },
-              ],
-              { cancelable: false }
-            )
+        console.log(parseInt(parseInt(this.state.shop.shopdetail.minprice)));
+        if (parseInt(this.state.summary) < parseInt(this.state.shop.shopdetail.minprice)) {
+          if (Platform.OS === "ios") {
+            AlertIOS.alert(
+              'FoodHall แจ้งเตือน',
+              'ค่าอาหารต้องมากกว่า ' + this.numberWithCommas(this.state.shop.shopdetail.minprice) + ' บาท',
+              [{
+                text: 'Dismiss',
+                onPress: null,
+              }]
+            );
+          }
+          if (Platform.OS === "android") {
+            ToastAndroid.show('ค่าอาหารต้องมากกว่า ' + this.numberWithCommas(this.state.shop.shopdetail.minprice) + ' บาท', ToastAndroid.SHORT);
+          }
 
 
-            break;
-          case 'PICKUP':
-            this.toogleTime();
-            break;
-
-          default:
-            break;
         }
-      }
+        else {
+          switch (ordertype) {
+            case 'DELIVERY':
+              Alert.alert(
+                'Warning',
+                'คุณต้องการสั่งอาหารให้มาส่งใช่ไหม?',
+                [
+                  { text: 'ไม่ใช่', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                  { text: 'ใช่', onPress: () => this.sendOrder('NOW') },
+                ],
+                { cancelable: false }
+              )
 
-      // this.navigateTo('basket');
+
+              break;
+            case 'NEXTDAY':
+              Alert.alert(
+                'Warning',
+                'ออเดอร์จะจัดส่งในวันถัดไป คุณต้องการสั่งใช่ไหม?',
+                [
+                  { text: 'ไม่ใช่', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                  { text: 'ใช่', onPress: () => this.sendOrder('NEXTDAY') },
+                ],
+                { cancelable: false }
+              )
+
+
+              break;
+            case 'PICKUP':
+              this.toogleTime();
+              break;
+
+            default:
+              break;
+          }
+        }
+
+        // this.navigateTo('basket');
+      }
     }
     else {
       Actions.login();
@@ -256,14 +314,14 @@ class Basket extends Component {
       'อีก ' + strmin + ' นาที คุณจะไปรับอาหาร?',
       [
         { text: 'ยกเลิก', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-        { text: 'ยืนยัน', onPress: () => this.sendOrder() },
+        { text: 'ยืนยัน', onPress: () => this.sendOrder('PICKUP') },
       ],
       { cancelable: false }
     )
 
   }
 
-  sendOrder = () => {
+  sendOrder = (ordertype) => {
     this.setState({ loading: true });
 
     var orderlist = [];
@@ -281,7 +339,7 @@ class Basket extends Component {
       summary: this.state.summary,
       pickuptime: this.state.pickuptime,
       paidtype: 'CASH',
-      deriveryrange: 'NOW',
+      deriveryrange: ordertype,
       lat: this.state.userdetail.lat,
       lng: this.state.userdetail.lng,
       address: this.state.shippingaddress,
@@ -289,11 +347,15 @@ class Basket extends Component {
 
     var formData = new FormData();
     this.state.dataSource._dataBlob.s1.map((data) => {
+      console.log(data);
       if (data != null) {
-        var strid = data.id;
-        var orderamount = data.amount;
-        formData.append('orderlist[]', strid);
-        formData.append('amountlist[]', orderamount);
+        if (!data.timestamp) {
+          var strid = data.id;
+          var orderamount = data.amount;
+          formData.append('orderlist[]', strid);
+          formData.append('amountlist[]', orderamount);
+        }
+
       }
 
     });
@@ -311,8 +373,7 @@ class Basket extends Component {
     };
 
 
-
-
+    console.log(formData);
     fetch(AppConfig.api + 'api/submitorder', request).then((response) => {
       console.log(response);
       this.setState({ loading: false });
@@ -429,7 +490,7 @@ class Basket extends Component {
   }
 
   renderRow(rowData, sec, i) {
-    if (rowData != null) {
+    if (rowData.timestamp == null) {
       return (
         <View style={{
           borderBottomWidth: 1,
@@ -439,18 +500,19 @@ class Basket extends Component {
         }}>
           <Grid>
             <Col style={{ width: 120, paddingLeft: 25, }}>
-
-              <Image
-                style={{
-                  height: 85,
-                  width: 85,
-                  margin: 8,
-                  backgroundColor: '#ecf0f1',
-                  borderRadius: 5
-                }}
-                resizeMode={"cover"}
-                source={{ uri: AppConfig.imgaddress + rowData.img }}
-              />
+              <TouchableWithoutFeedback onPress={() => Actions.imageslide({ img: AppConfig.imgaddress + rowData.img })} >
+                <Image
+                  style={{
+                    height: 85,
+                    width: 85,
+                    margin: 8,
+                    backgroundColor: '#ecf0f1',
+                    borderRadius: 5
+                  }}
+                  resizeMode={"cover"}
+                  source={{ uri: AppConfig.imgaddress + rowData.img }}
+                />
+              </TouchableWithoutFeedback>
             </Col>
             <Col style={{ paddingLeft: 25, }}>
               <Row style={{ padding: 8, paddingTop: 0, paddingBottom: 0, }}>
@@ -488,7 +550,10 @@ class Basket extends Component {
             <Row>
               <Col style={{ alignItems: 'flex-start', justifyContent: 'center', paddingLeft: 8, }}>
                 <Text style={{ color: '#464646', fontSize: 14, }}>เพิ่มเติม (เช่น.หวานน้อย ,ขอซอสพริกเยอะๆ)</Text>
-                <FormInput borderBottomColor={'#ddd'} borderBottomWidth={1} height={40} multiline={true} value={this.state.orderadditional} onChangeText={orderadditional => this.setState({ orderadditional })}
+                <FormInput placeholder={'ระบุรายละเอียดเพิ่มเติม'} borderBottomColor={'#ddd'}
+                  borderBottomWidth={1} height={40} multiline={true}
+                  value={this.state.orderadditional}
+                  onChangeText={orderadditional => this.setState({ orderadditional })}
                 />
               </Col>
 
@@ -627,12 +692,17 @@ class Basket extends Component {
                     <Text style={{ color: (this.state.shop.shopdetail.ispickup == 0 ? '#ddd' : '#22313F'), fontSize: 14, fontWeight: 'normal', width: 70, textAlign: 'center' }}>รับกลับ</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.onItemClicked('DELIVERY')} disabled={(this.state.shop.shopdetail.isdelivery == 0)}>
+                <TouchableOpacity onPress={() => this.onItemClicked('DELIVERY')} disabled={(this.state.shop.shopdetail.isdelivery == 0 || this.state.shop.shopdetail.isimmediatedelivery == 0)}>
                   <View style={styles.btn}>
-                    <Text style={{ color: (this.state.shop.shopdetail.isdelivery == 0 ? '#ddd' : '#22313F'), fontSize: 14, fontWeight: 'normal', width: 70, textAlign: 'center' }}>ส่งถึงที่</Text>
+                    <Text style={{ color: ((this.state.shop.shopdetail.isdelivery == 0 || this.state.shop.shopdetail.isimmediatedelivery == 0) ? '#ddd' : '#22313F'), fontSize: 14, fontWeight: 'normal', width: 70, textAlign: 'center' }}>ส่งวันนี้</Text>
                   </View>
                 </TouchableOpacity>
 
+                <TouchableOpacity onPress={() => this.onItemClicked('NEXTDAY')} disabled={(this.state.shop.shopdetail.isdelivery == 0 || this.state.shop.shopdetail.isonedaydelivery == 0)}>
+                  <View style={styles.btn}>
+                    <Text style={{ color: ((this.state.shop.shopdetail.isdelivery == 0 || this.state.shop.shopdetail.isonedaydelivery == 0) ? '#ddd' : '#22313F'), fontSize: 14, fontWeight: 'normal', width: 70, textAlign: 'center' }}>ส่งพรุ่งนี้</Text>
+                  </View>
+                </TouchableOpacity>
 
 
               </View>
@@ -776,13 +846,20 @@ class Basket extends Component {
 
   async _onReadyAsync(data) {
     return new Promise((resolve) => {
-      this.props.basket.push(null);
+      this.props.basket.push({ timestamp: Date.now() });
       setTimeout(
         () => {
           this.setState({
+            items: this.props.basket,
             dataSource: this.state.dataSource.cloneWithRows(this.props.basket),
           }, resolve)
-          this.checkAmount();
+
+          var newArray = this.props.basket.slice(); 
+          newArray[newArray.length - 1] = {
+            timestamp: Date.now()
+          }
+
+          this.checkAmount(newArray);
         },
         500
       );

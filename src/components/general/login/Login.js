@@ -111,6 +111,7 @@ class Login extends Component {
       gender: '',
       email: '',
       fbid: '',
+      shopid: '',
     };
   }
 
@@ -214,10 +215,9 @@ class Login extends Component {
         return responseData;
       })
       .then((data) => {
-        if (data.result) {
+        if (data.result) { 
           this.setState({ loading: false, });
-          if (data.result.tel == '') {
-
+          if (data.result.tel == '') { 
             this
               .props
               .dispatch({
@@ -227,6 +227,7 @@ class Login extends Component {
                   fbid: this.state.fbid,
                   name: this.state.name,
                   gender: this.state.gender,
+                  shopid: data.result.shopid,
                 }
               });
 
@@ -236,7 +237,7 @@ class Login extends Component {
             AsyncStorage.setItem("userdetail", JSON.stringify({
               tel: data.result.tel
               , email: data.result.email
-              ,activeaddress : data.result.lat
+              , activeaddress: data.result.lat
               , lat: data.result.lat
               , lng: data.result.lng
               , islogin: 1
@@ -244,7 +245,13 @@ class Login extends Component {
               , id: data.result.id
               , address: data.result.address
               , fbid: data.result.fbid
+              , shopid: data.result.shopid,
             }));
+
+            AsyncStorage.setItem("mode", JSON.stringify({
+              shopmode: 0
+            }));
+
 
             AsyncStorage.getItem("userdetail").then((value) => {
               this
@@ -299,6 +306,11 @@ class Login extends Component {
       , address: ''
       , id: ''
       , fbid: ''
+      , shopid: ''
+    }));
+
+    AsyncStorage.setItem("mode", JSON.stringify({
+      shopmode: 0
     }));
     this.setState({ userdetail: null });
 

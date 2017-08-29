@@ -90,7 +90,7 @@ class Shopdetail extends Component {
     super(props);
 
     var ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 != r2
+      rowHasChanged: (row1, row2) => row1 != row2,
     });
 
     this.state = {
@@ -101,6 +101,7 @@ class Shopdetail extends Component {
       numpadval: 0,
       floatshow: false,
       userdetail: null,
+      items: []
     }
 
   }
@@ -165,9 +166,21 @@ class Shopdetail extends Component {
     if (num < 0) {
       num = 0;
     }
-    rowData.amount = num;
-    this.setState({});
-    this.checkAmoumt();
+
+    var newArray = this.state.dataSource._dataBlob.s1.slice();
+    newArray[index] = {
+      ...newArray[index],
+      amount: num,
+    };
+
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(newArray),
+      items: newArray
+    }, () => { 
+      this.checkAmoumt();
+    })
+
+
   }
 
   checkAmoumt = () => {
@@ -175,6 +188,7 @@ class Shopdetail extends Component {
     this.state.dataSource._dataBlob.s1.map((data) => {
       amount += data.amount ? data.amount : 0;
     });
+    console.log(amount);
     if (amount > 0) {
       this.setState({ floatshow: true });
     }
@@ -232,7 +246,7 @@ class Shopdetail extends Component {
         <View style={{ width: 200, }}>
           <View style={{
             justifyContent: 'center',
-            alignItems: 'center', backgroundColor: '#ecf0f1', padding: 8, borderRadius: 50,
+            alignItems: 'center', backgroundColor: '#ecf0f1', padding: 5, borderRadius: 50,
           }}>
             <Text style={{ color: '#aaa' }}>{'ไม่สามารถสั่งอาหารได้'}</Text>
           </View>
@@ -285,17 +299,13 @@ class Shopdetail extends Component {
               <Text style={{ fontSize: 18, color: rowData.shopdetail.isshopopen == 'true' ? "#525252" : "#AAA", fontWeight: 'normal' }}>{rowData.shopdetail.isshopopen == 'true' ? 'OPEN' : 'CLOSE'}</Text>
             </View>
             {rowData.shopdetail.isshopopen == 'true' ? (<Text style={{ color: '#525252', fontWeight: 'normal' }}>{rowData.shopdetail.timeopen.substr(0, 5)} - {rowData.shopdetail.timeclose.substr(0, 5)}</Text>) : (<Spacer size={1} />)}
-
           </View>
           <View style={{ flex: 1, padding: 15, paddingTop: 0, paddingBottom: 0, flexDirection: 'row', backgroundColor: "#FFFFFF", alignItems: 'center' }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
               <Icon style={{ fontSize: 16, color: '#464646', paddingTop: 3, }} name='check-circle-o' />
               <Text style={{ fontSize: 14, color: "#464646", }}> รับเงินสด</Text>
-
               {this.renderDelivery(rowData.shopdetail.isdelivery)}
               {this.renderPickup(rowData.shopdetail.ispickup)}
-
-
             </View>
           </View>
         </View>
@@ -410,6 +420,7 @@ class Shopdetail extends Component {
       data.result.splice(0, 0, this.props.shopdetail);
       console.log(data);
       this.setState({
+        items: data.result,
         dataSource: this.state.dataSource.cloneWithRows(data.result),
       }, resolve)
     });

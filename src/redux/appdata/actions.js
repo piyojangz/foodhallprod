@@ -4,7 +4,7 @@ export function total() {
     type: 'TOTAL',
   };
 }
- 
+
 
 export function shippingaddress() {
   return {
@@ -17,14 +17,20 @@ export function address() {
     type: 'ADDRESS',
   };
 }
- 
+
 
 export function user() {
   return {
     type: 'USER',
   };
 }
- 
+
+export function shop() {
+  return {
+    type: 'SHOP',
+  };
+}
+
 
 export function otp() {
   return {
@@ -36,5 +42,18 @@ export function otp() {
 export function location() {
   return {
     type: 'LOCATION',
+  };
+}
+
+
+export function incommingcount() {
+  return {
+    type: 'INCOMMINGCOUNT',
+  };
+}
+
+export function pendingcount() {
+  return {
+    type: 'PENDINGCOUNT',
   };
 }
