@@ -17,6 +17,7 @@ import Drawer from '@containers/ui/DrawerContainer';
 import AppLaunch from '@containers/Launch/LaunchContainer';
 import Placeholder from '@components/general/Placeholder';
 import Map from '@components/general/map/Map';
+import Cate from '@components/general/Cate';
 import WebView from '@components/general/WebView';
 import Shopdetail from '@components/general/shopdetail/Shopdetail';
 import Basket from '@components/general/basket/Basket';
@@ -29,7 +30,13 @@ import Shippingaddress from '@components/general/shippingaddress/Shippingaddress
 import Shippingaddresslist from '@components/general/shippingaddress/Shippingaddresslist';
 import Orderdetail from '@components/general/order/Orderdetail';
 import Imageslide from '@components/general/Imageslide';
+import Addimgprofile from '@components/general/Addimgprofile';
+import Setpayment from  '@components/general/Setpayment';
 import Setting from '@components/shop/Setting';
+
+import Setshippingmethod from '@components/shop/Setshippingmethod';
+import Setpaymentmethod from '@components/shop/Setpaymentmethod';
+import Setbankacc from '@components/shop/Setbankacc';
 import AuthScenes from './auth';
 import TabsScenes from './tabs';
 import ShopScenes from './shop';
@@ -40,6 +47,8 @@ import Shopfirstsetting from '@components/shop/Shopfirstsetting';
 import Dopurchase from '@components/shop/Dopurchase';
 import Shoporderdetail from '@components/shop/Shoporderdetail';
 import Redeemsuccess from '@components/shop/Redeemsuccess';
+import Setworkingtime from '@components/shop/Setworkingtime';
+
 
 /* Routes ==================================================================== */
 export default Actions.create(
@@ -174,14 +183,59 @@ export default Actions.create(
 
         <Scene
           clone
+          key={'setbankacc'}
+          title={'ตั้งค่าบัญชี'}
+          component={Setbankacc}
+          analyticsDesc={'Setbankacc'}
+        />
+
+        
+
+        <Scene
+          clone
+          key={'setshippingmethod'}
+          title={'ตั้งค่าการจัดส่ง'}
+          component={Setshippingmethod}
+          analyticsDesc={'Setshippingmethod'}
+        />
+
+        <Scene
+          clone
+          key={'setpaymentmethod'}
+          title={'ตั้งค่าการชำระเงิน'}
+          component={Setpaymentmethod}
+          analyticsDesc={'Setpaymentmethod'}
+        />
+        
+
+        
+
+        <Scene
+          clone
           key={'addcover'}
           title={'รายการของคุณ'}
           component={Addcover}
           analyticsDesc={'Addcover'}
         />
 
+        <Scene
+          clone
+          key={'setpayment'}
+          title={'การชำระเงิน'}
+          component={Setpayment}
+          analyticsDesc={'Setpayment'}
+        />
 
 
+        <Scene
+          clone
+          key={'cate'}
+          title={'Cate'}
+          component={Cate}
+          analyticsDesc={'Cate'}
+        />
+
+        
 
         <Scene
           clone
@@ -197,6 +251,14 @@ export default Actions.create(
           analyticsDesc={'shippingaddresslist'}
         />
 
+
+        <Scene
+          clone
+          key={'setworkingtime'}
+          component={Setworkingtime}
+          analyticsDesc={'setworkingtime'}
+        />
+        
 
         <Scene
           clone
@@ -234,6 +296,14 @@ export default Actions.create(
           analyticsDesc={'Redeemsuccess'}
         />
 
+
+        <Scene
+          clone
+          key={'addimgprofile'}
+          component={Addimgprofile}
+          analyticsDesc={'Addimgprofile'}
+        />
+        
 
 
 

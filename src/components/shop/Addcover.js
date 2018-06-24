@@ -203,7 +203,7 @@ class Addcover extends Component {
             console.log(data);
             this.setState({ loading: false });
 
-            Actions.pop({ refresh: { Reload: true } });
+            Actions.pop({ refresh: { reload: true } });
           }).done();
 
 

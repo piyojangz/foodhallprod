@@ -6,6 +6,7 @@
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import * as Animatable from 'react-native-animatable';
 import {
   View,
   Alert,
@@ -18,8 +19,10 @@ import {
   ActivityIndicator,
   RefreshControl,
   PushNotificationIOS,
+  TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
+import Communications from 'react-native-communications';
 import MapView from 'react-native-maps';
 import LoadingContainer from 'react-native-loading-container';
 import NavigationBar from 'react-native-navigation-bar';
@@ -109,7 +112,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: 'normal'
-  }
+  },
 });
 
 
@@ -210,9 +213,16 @@ class Shoporderdetail extends Component {
     }
 
     if (rowData == null && i == 0) {
+      if (this.props.order.user_img != '') {
+        var profileimg = AppConfig.imgaddress + this.props.order.user_img;
+      }
+      else {
+        var profileimg = (this.props.order.fbid == '' || this.props.order.fbid == '0' ? 'http://leafood.servewellsolution.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.props.order.fbid + '/picture?width=250&height=250');
+      }
       return (
         <View>
           <MapView
+            scrollEnabled={false}
             style={{
               height: 240,
             }}
@@ -230,6 +240,7 @@ class Shoporderdetail extends Component {
               longitude: parseFloat(this.props.order.shippinglng || this.props.order.lng),
             }} />
           </MapView>
+
           <View
             style={{
               flexGrow: 1,
@@ -239,28 +250,39 @@ class Shoporderdetail extends Component {
               backgroundColor: '#fff',
               paddingTop: 25,
             }}>
+
             <View style={{ backgroundColor: color, padding: 5, paddingRight: 15, paddingLeft: 15, borderRadius: 25, marginBottom: 10, }}>
               <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'normal' }}>{status}</Text>
             </View>
+
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ fontSize: 16, color: "#E67E22", fontWeight: 'bold' }}>ORDER NO. {this.props.order.orderno}</Text>
             </View>
 
 
-            <Text
-              style={{
-                fontSize: 16,
-                paddingTop: 15,
-                paddingBottom: 15,
-                color: '#464646',
-                fontWeight: 'normal'
-              }}>
-              <Icon
-                name={'user-circle'}
-                size={14}
-                rot
-                color={'#464646'}
-              /> ชื่อผู้สั่ง : {this.props.order.fullname}</Text>
+            <View style={{ flexDirection: 'row', marginTop: 15, }}>
+              <TouchableWithoutFeedback onPress={() => Actions.imageslide({ img: profileimg })} >
+                <Image
+                  ref={'profileimg'}
+                  style={{ height: 30, width: 30, backgroundColor: '#fff', borderRadius: 15 }}
+                  resizeMode={"cover"}
+                  source={{
+                    uri: profileimg
+                  }} />
+              </TouchableWithoutFeedback>
+              <Text
+                style={{
+                  fontSize: 16,
+                  paddingLeft: 5,
+                  paddingTop: 0,
+                  paddingBottom: 15,
+                  color: '#464646',
+                  fontWeight: 'normal'
+                }}>
+                ชื่อผู้สั่ง : {this.props.order.fullname == 0 || this.props.order.fullname == '' ? this.props.order.email : this.props.order.fullname}</Text>
+            </View>
+
+
             <Text
               style={{
                 fontSize: 16,
@@ -273,7 +295,7 @@ class Shoporderdetail extends Component {
                 size={14}
                 rot
                 color={'#464646'}
-              /> เบอร์ติดต่อ : {this.props.order.tel}</Text>
+              /> เบอร์ติดต่อ : <TouchableWithoutFeedback onPress={() => Communications.phonecall(this.props.order.tel, true)} ><Text style={{ color: '#2574A9', fontWeight: 'normal', textDecorationLine: 'underline' }} >{this.props.order.tel}</Text></TouchableWithoutFeedback></Text>
 
             <Text
               style={{
@@ -301,7 +323,7 @@ class Shoporderdetail extends Component {
                 size={14}
                 rot
                 color={'#464646'}
-              /> สั่งเมื่อ : {moment.utc(this.props.order.createdate).local().format('DD MMM YYYY เวลา HH:mm')}</Text>
+              /> สั่งเมื่อ : {moment.utc(this.props.order.deriverydate).local().format('DD MMM YYYY เวลา HH:mm')}</Text>
 
             <Text
               style={{
@@ -315,9 +337,14 @@ class Shoporderdetail extends Component {
                 size={14}
                 color={'#F00'}
               /> เพิ่มเติม : {this.props.order.additional || '-'}</Text>
+
+
+            {this.renderimgslip(this.props.order)}
             {this.renderOrdertype(this.props.order)}
 
           </View>
+
+
         </View>
       )
     }
@@ -329,17 +356,19 @@ class Shoporderdetail extends Component {
         }}>
           <Grid>
             <Col style={{ width: 96, }}>
-              <Image
-                style={{
-                  height: 85,
-                  width: 85,
-                  margin: 8,
-                  backgroundColor: '#ecf0f1',
-                  borderRadius: 5
-                }}
-                resizeMode={"cover"}
-                source={{ uri: AppConfig.imgaddress + rowData.img }}
-              />
+              <TouchableWithoutFeedback onPress={() => Actions.imageslide({ img: AppConfig.imgaddress + rowData.img })} >
+                <Image
+                  style={{
+                    height: 85,
+                    width: 85,
+                    margin: 8,
+                    backgroundColor: '#ecf0f1',
+                    borderRadius: 5
+                  }}
+                  resizeMode={"cover"}
+                  source={{ uri: AppConfig.imgaddress + rowData.img }}
+                />
+              </TouchableWithoutFeedback>
             </Col>
             <Col>
               <Row style={{ padding: 8, paddingTop: 0, paddingBottom: 0, }}>
@@ -387,29 +416,68 @@ class Shoporderdetail extends Component {
               <Col style={{ alignItems: 'flex-start', justifyContent: 'center', paddingLeft: 8, }}><Text style={{ color: '#464646', fontSize: 14, }}>ค่าอาหาร</Text></Col>
               <Col style={{ alignItems: 'flex-end', justifyContent: 'center', paddingRight: 8, }}><Text style={{ color: '#464646', fontWeight: 'bold', fontSize: 14, }}>{this.numberWithCommas(parseFloat(this.props.order.summary))}฿</Text></Col>
             </Row>
-
+            <View style={{
+            borderTopWidth: 1,
+            borderColor: '#d7d7d7',
+          }}>
+            <Row style={{ height: 50, backgroundColor: '#C3DFFF' }}>
+              <Col style={{ alignItems: 'flex-start', justifyContent: 'center', paddingLeft: 8, }}><Text style={{ color: '#464646', fontSize: 14, }}>ยอดที่ต้องชำระ</Text></Col>
+              <Col style={{ alignItems: 'flex-end', justifyContent: 'center', paddingRight: 8, }}><Text style={{ color: '#464646', fontWeight: 'bold', fontSize: 14, }}>{this.numberWithCommas(parseFloat(this.props.order.shippingfee) + parseFloat(this.props.order.summary))}฿</Text></Col>
+            </Row>
+          </View>
           </Grid>
         </View>
       )
     }
 
   }
+  renderPayment(data) {
+    var payment = [];
+    if (data.paidtype.toUpperCase() == 'CASH') {
+      payment.push(<View key={data.id + 'cash'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับเงินสด</Text>
+      </View>);
 
-  renderOrdertype(rowData) {
-    console.log(rowData);
-    if (rowData.pickuptime > 0) {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='map-pin' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับกลับ</Text></View>)
+    }
+    if (data.paidtype.toUpperCase() == 'BANK') {
+      payment.push(<View key={data.id + 'bank'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> โอนเงิน</Text>
+      </View>);
+    }
+
+    return payment;
+  }
+  renderimgslip(rowData) {
+    if (rowData.paidtype.toUpperCase() == 'BANK') {
+      var imgslip = AppConfig.imgaddress + rowData.imgslip;
+      return (
+        <TouchableWithoutFeedback onPress={() => Actions.imageslide({ img: imgslip })} >
+          <Text style={{ color: '#1F3A93', textDecorationLine: 'underline' }}>  <Icon style={{ fontSize: 14, color: '#1F3A93', paddingTop: 3 }} name='file-o' /> ไฟล์แนบ(slip)</Text>
+
+        </TouchableWithoutFeedback>
+      )
     }
     else {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='motorcycle' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
+      return (
+        <View />
+      )
+    }
+  }
+
+  renderOrdertype(rowData) {
+    if (rowData.pickuptime > 0) {
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='map-pin' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับกลับ <Text style={{ fontSize: 18, color: "#F00", }}> ({rowData.pickuptime} นาที)</Text></Text></View>)
+    }
+    else {
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='motorcycle' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
       </View>)
     }
 
@@ -420,18 +488,19 @@ class Shoporderdetail extends Component {
   }
 
   handleGetDirections = () => {
+    console.log(this.props.order);
     this.setState({ loading: true, });
     navigator.geolocation.getCurrentPosition((position) => {
       this.setState({ loading: false, });
-      console.log(position);
+
       const data = {
         source: {
           latitude: parseFloat(position.coords.latitude),
           longitude: parseFloat(position.coords.longitude)
         },
         destination: {
-          latitude: parseFloat(this.props.order.lat),
-          longitude: parseFloat(this.props.order.lng)
+          latitude: parseFloat(this.props.order.shippinglat),
+          longitude: parseFloat(this.props.order.shippinglng)
         },
         params: [
           {
@@ -440,7 +509,7 @@ class Shoporderdetail extends Component {
           }
         ]
       }
-
+      console.log(data);
       getDirections(data)
     }, (error) => {
       console.log(JSON.stringify(error))
@@ -636,54 +705,61 @@ class Shoporderdetail extends Component {
   }
 
   renderbtn() {
-    if (this.props.status == 'PENDING') {
-      return (
-        <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'center', flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => this.changeorderstatus('DONE')} >
-            <View
-              style={[styles.btntime, { backgroundColor: '#00B16A' }]}>
+    if (this.props.status != 'HISTORY') {
 
-              <Text
-                style={{
-                  color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 'normal'
-                }}>  <Icon name={'check'} color={'#FFF'} /> จัดส่งสินค้า / ลูกค้ามารับ เรียบร้อยแล้ว</Text>
-            </View>
-          </TouchableOpacity>
 
-        </View>
-      )
+      if (this.props.status == 'PENDING') {
+        return (
+          <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'center', flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => this.changeorderstatus('DONE')} >
+              <View
+                style={[styles.btntime, { backgroundColor: '#00B16A' }]}>
+
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 'normal'
+                  }}>  <Icon name={'check'} color={'#FFF'} /> จัดส่งสินค้า / ลูกค้ามารับ เรียบร้อยแล้ว</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        )
+      }
+      else {
+        return (
+          <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'space-between', flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => this.changeorderstatus('REJECT')} >
+              <View
+                style={[styles.btntime, { backgroundColor: '#D64541' }]}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 'normal'
+                  }}><Icon name={'close'} color={'#FFF'} /> ปฏิเสธ</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => this.changeorderstatus('ACCEPT')} >
+              <View
+                style={styles.btntime}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 'normal'
+                  }}><Icon name={'check'} color={'#FFF'} /> ตอบรับ</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        )
+      }
     }
     else {
-      return (
-        <View style={{ padding: 20, backgroundColor: '#FFFFFF', justifyContent: 'space-between', flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => this.changeorderstatus('REJECT')} >
-            <View
-              style={[styles.btntime, { backgroundColor: '#D64541' }]}>
-              <Text
-                style={{
-                  color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 'normal'
-                }}><Icon name={'close'} color={'#FFF'} /> ปฏิเสธ</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => this.changeorderstatus('ACCEPT')} >
-            <View
-              style={styles.btntime}>
-              <Text
-                style={{
-                  color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 'normal'
-                }}><Icon name={'check'} color={'#FFF'} /> ตอบรับ</Text>
-            </View>
-          </TouchableOpacity>
-
-        </View>
-      )
+      return (<View></View>);
     }
   }
 
@@ -727,11 +803,14 @@ class Shoporderdetail extends Component {
         {this.renderbtn()}
       </View>
       <Spacer size={51} />
+
+
       <SleekLoadingIndicator loading={this.state.loading} />
     </View>
 
     )
   }
+
 
 
   async _loadInitialDataAsync() {

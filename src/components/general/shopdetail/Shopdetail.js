@@ -176,7 +176,7 @@ class Shopdetail extends Component {
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(newArray),
       items: newArray
-    }, () => { 
+    }, () => {
       this.checkAmoumt();
     })
 
@@ -243,35 +243,91 @@ class Shopdetail extends Component {
     }
     else {
       return (
-        <View style={{ width: 200, }}>
+        <View style={{ width: 170, }}>
           <View style={{
             justifyContent: 'center',
             alignItems: 'center', backgroundColor: '#ecf0f1', padding: 5, borderRadius: 50,
           }}>
-            <Text style={{ color: '#aaa' }}>{'ไม่สามารถสั่งอาหารได้'}</Text>
+            <Text style={{ color: '#aaa',fontSize:12, }}>{'ไม่สามารถสั่งอาหารได้'}</Text>
           </View>
         </View>
       )
     }
   }
 
+  renderPayment(data) {
+    var payment = [];
+    if (data.cashaccept == '1') {
+      payment.push(<View key={data.id + 'cash'} style={{ flexDirection: 'row',marginRight: 15, }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5,   }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับเงินสด</Text>
+      </View>);
+
+    }
+    if (data.bankaccept == '1') {
+      payment.push(<View key={data.id + 'bank'} style={{ flexDirection: 'row',marginRight: 15, }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5,   }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> โอนเงิน</Text>
+      </View>);
+    }
+
+    return payment;
+  }
   renderDelivery(isdelivery) {
     if (isdelivery == '1') {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#464646', marginLeft: 15, paddingTop: 3, }} name='motorcycle' />
-        <Text style={{ fontSize: 14, color: "#464646", }}> บริการส่งถึงที่</Text>
+      return (<View style={{ flexDirection: 'row',marginRight: 15, }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF',  paddingTop: 5, }} name='motorcycle' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> บริการส่งถึงที่</Text>
       </View>);
     }
   }
 
   renderPickup(ispickup) {
     if (ispickup == '1') {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#464646', marginLeft: 15, paddingTop: 3, }} name='map-pin' />
-        <Text style={{ fontSize: 14, color: "#464646", }}> รับกลับ</Text></View>);
+      return (<View style={{ flexDirection: 'row' ,marginRight: 15,}}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF',  paddingTop: 5, }} name='map-pin' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับกลับ</Text></View>);
     }
   }
 
+
+  mapthaiday(day) {
+    switch (day) {
+      case 'MON':
+        return 'จ.';
+      case 'TUE':
+        return 'อ.';
+      case 'WED':
+        return 'พ.';
+      case 'THU':
+        return 'พฤ.';
+      case 'FRI':
+        return 'ศ.';
+      case 'SAT':
+        return 'ส.';
+      case 'SUN':
+        return 'อา.';
+      default:
+        return '-';
+    }
+  }
+  renderWorkingday(workingday) {
+    var views = [];
+    workingday.forEach(function (element) {
+      views.push(
+        <View key={'v_' + element.id} style={{ marginLeft: 10, marginRight: 10 }}>
+          <Text key={element.id} style={{ color: '#525252', fontWeight: 'normal' }}>{this.mapthaiday(element.workingday)} {element.timeopen.substr(0, 5)} - {element.timeclose.substr(0, 5)}</Text>
+        </View>
+      );
+    }, this);
+    return (
+      <ScrollView horizontal={true}  >
+        <View style={{ flexDirection: 'row', padding: 10, }}>
+          {views}
+        </View>
+      </ScrollView>
+    )
+  }
 
   renderRow(rowData, sec, i) {
     if (i == 0) {
@@ -291,22 +347,30 @@ class Shopdetail extends Component {
           <View style={{ flex: 1, padding: 15, paddingBottom: 0, flexDirection: 'row', backgroundColor: "#FFFFFF", alignItems: 'center' }}>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
               <Text style={{ fontSize: 22, color: "#464646", fontWeight: 'bold', textAlign: 'center' }}>{rowData.shopdetail.title}</Text>
+              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop:10,paddingBottom:5 }}>
+                  {this.renderPayment(rowData.shopdetail)}
+                  {this.renderDelivery(rowData.shopdetail.isdelivery)}
+                  {this.renderPickup(rowData.shopdetail.ispickup)}
+                </View>
               <Text style={{ color: '#E67E22', textAlign: 'center', fontWeight: 'normal' }}>{rowData.shopdetail.catename}</Text>
             </View>
-          </View>
+          </View> 
           <View style={{ flex: 1, padding: 15, paddingTop: 5, flexDirection: 'column', backgroundColor: "#FFFFFF", alignItems: 'center' }}>
-            <View style={{ backgroundColor: '#ecf0f1', padding: 5, borderRadius: 25, paddingLeft: 20, paddingRight: 20, }}>
+            <View style={{ backgroundColor: '#ecf0f1', padding: 5, borderRadius: 25, paddingLeft: 20, paddingRight: 20, marginBottom: 5, }}>
               <Text style={{ fontSize: 18, color: rowData.shopdetail.isshopopen == 'true' ? "#525252" : "#AAA", fontWeight: 'normal' }}>{rowData.shopdetail.isshopopen == 'true' ? 'OPEN' : 'CLOSE'}</Text>
             </View>
-            {rowData.shopdetail.isshopopen == 'true' ? (<Text style={{ color: '#525252', fontWeight: 'normal' }}>{rowData.shopdetail.timeopen.substr(0, 5)} - {rowData.shopdetail.timeclose.substr(0, 5)}</Text>) : (<Spacer size={1} />)}
+            {this.renderWorkingday(rowData.workingdays)}
           </View>
           <View style={{ flex: 1, padding: 15, paddingTop: 0, paddingBottom: 0, flexDirection: 'row', backgroundColor: "#FFFFFF", alignItems: 'center' }}>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
-              <Icon style={{ fontSize: 16, color: '#464646', paddingTop: 3, }} name='check-circle-o' />
-              <Text style={{ fontSize: 14, color: "#464646", }}> รับเงินสด</Text>
-              {this.renderDelivery(rowData.shopdetail.isdelivery)}
-              {this.renderPickup(rowData.shopdetail.ispickup)}
-            </View>
+            <ScrollView horizontal={true}>
+              <View style={{
+                justifyContent: 'center',
+                flexDirection: 'column',
+                flex: 1,
+              }}>
+            
+              </View>
+            </ScrollView>
           </View>
         </View>
       )

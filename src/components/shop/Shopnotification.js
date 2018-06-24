@@ -204,7 +204,7 @@ class Shopnotification extends Component {
   }
 
   pressRow(rowData) {
-    Actions.shoporderdetail({ order: rowData, status: 'PENDING' })
+    Actions.shoporderdetail({ order: rowData, status: 'HISTORY' })
   }
 
   renderRow = (rowData, s, index) => {

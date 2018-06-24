@@ -97,11 +97,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function numberWithCommas(x) {
-  return x
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
 
 
 
@@ -124,14 +119,9 @@ class Introduceshop extends Component {
 
   constructor(props) {
     super(props);
-
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
-    this.mapCircle = null;
-    this.mapRef = null;
     this.state = {
       loading: false,
+      showslide: false,
       userdetail: undefined,
     }
   }
@@ -160,50 +150,68 @@ class Introduceshop extends Component {
     console.log(index, total);
   }
 
+  renderslide = () => {
+    this.setState({ showslide: true });
+  }
+
+
+  renderappintro = () => {
+    if (this.state.showslide) {
+
+      return (
+        <LoadingContainer
+        onError={e => console.log(e)}
+        onLoadStartAsync={this._loadInitialDataAsync.bind(this)}
+        onReadyAsync={this._onReadyAsync.bind(this)}>
+       
+        <AppIntro
+          onNextBtnClick={this.nextBtnHandle}
+          onDoneBtnClick={this.doneBtnHandle}
+          onSkipBtnClick={this.onSkipBtnHandle}
+          onSlideChange={this.onSlideChangeHandle}>
+          <View style={[AppStyles.container, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00B16A' }]}>
+            <View level={-10}><Image source={require('../../assets/images/icfh1.png')} style={{ width: 110, height: 220 }} resizeMode={'contain'} /></View>
+            <View level={-50}><Text style={styles.text}>Foodhall จะขายอะไรก็ง่ายนิดเดียว</Text></View>
+          </View>
+          <View style={[styles.slide, { backgroundColor: '#a4b602' }]}>
+            <View level={-10}><Image source={require('../../assets/images/icfh2.png')} style={{ width: 110, height: 180 }} resizeMode={'contain'} /></View>
+            <View level={-50}><Text style={styles.text}>รองรับบริการ รับ ส่ง สั่ง ภายในที่เดียว</Text></View>
+          </View>
+          <View style={[styles.slide, { backgroundColor: '#fa931d' }]}>
+            <View level={-10}><Image source={require('../../assets/images/icfh3.png')} style={{ width: 110, height: 180 }} resizeMode={'contain'} /></View>
+            <View level={-50}><Text style={styles.text}>เพิ่มฐานลูกค้าได้ง่ายๆเพียงใช้งาน Foodhall</Text></View>
+          </View>
+          <View style={[styles.slide, { backgroundColor: '#a4b602' }]}>
+            <View level={-10}><Image source={require('../../assets/images/icfh4.png')} style={{ width: 110, height: 180 }} resizeMode={'contain'} /></View>
+            <View level={-50}><Text style={styles.text}>ไม่ต้องมีหน้าร้านก็ขายของได้</Text></View>
+          </View>
+        </AppIntro>
+        </LoadingContainer>
+      )
+    }
+    else {
+      <View ></View>
+    }
+  }
+
   render = () => {
     return (
       <View style={[AppStyles.container]}>
-        {/* <NavigationBar
-          title={'แนะนำการเปิดร้านค้า'}
-          height={(Platform.OS === 'ios') ? 44 : 64}
-          titleColor={'#fff'}
-          backgroundColor={AppColors.brand.shopprimary}
-          leftButtonTitleColor={'#fff'}
-          leftButtonIcon={require('../../assets/images/ic_left-arrow.png')}
-          leftButtonTitle={'back'}
-          onLeftButtonPress={Actions.pop}
-          leftButtonTitleColor={'#fff'}
-        />
-        <Spacer size={64} /> */}
+         <View style={{flex:1,justifyContent:'center',flexDirection:'row',alignItems:'center',backgroundColor:'#00B16A'}}>
+            <Button
+              onPress={() => this.renderslide()}
+              style={{ width: 250 }}
+              borderRadius={25} 
+              borderColor={'#FFF'}
+              color={'#FFF'}
+              small
+              outlined
+              title={'เปิดร้านกับเราวันนี้รับทันที 1,000 coins >>>'}
+            />
+          </View>
+          {this.renderappintro()}
 
-
-        <LoadingContainer
-          onError={e => console.log(e)}
-          onLoadStartAsync={this._loadInitialDataAsync.bind(this)}
-          onReadyAsync={this._onReadyAsync.bind(this)}>
-          <AppIntro
-            onNextBtnClick={this.nextBtnHandle}
-            onDoneBtnClick={this.doneBtnHandle}
-            onSkipBtnClick={this.onSkipBtnHandle}
-            onSlideChange={this.onSlideChangeHandle}>
-            <View style={[AppStyles.container, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00B16A' }]}>
-              <View level={-10}><Text style={styles.text}>Page 1</Text></View>
-              <View level={-50}><Text style={styles.text}>Foodhall จะขายอะไรก็ง่ายนิดเดียว</Text></View>
-            </View>
-            <View style={[styles.slide, { backgroundColor: '#a4b602' }]}>
-              <View level={-10}><Text style={styles.text}>Page 2</Text></View>
-              <View level={-50}><Text style={styles.text}>รองรับบริการ รับ ส่ง สั่ง ภายในที่เดียว</Text></View>
-            </View>
-            <View style={[styles.slide, { backgroundColor: '#fa931d' }]}>
-              <View level={-10}><Text style={styles.text}>Page 3</Text></View>
-              <View level={-50}><Text style={styles.text}>เพิ่มฐานลูกค้าได้ง่ายๆเพียงใช้งาน Foodhall</Text></View>
-            </View>
-            <View style={[styles.slide, { backgroundColor: '#a4b602' }]}>
-              <View level={-10}><Text style={styles.text}>Page 4</Text></View>
-              <View level={-50}><Text style={styles.text}>ไม่ต้องมีหน้าร้านก็ขายของได้</Text></View>
-            </View>
-          </AppIntro>
-        </LoadingContainer>
+  
 
       </View>
     )

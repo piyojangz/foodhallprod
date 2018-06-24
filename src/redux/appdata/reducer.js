@@ -2,6 +2,7 @@ export const initialState = {
   total: 0,
   incommingcount: 0,
   pendingcount: 0,
+  shopnoti:0,
   log: [],
   shop: [],
   shopdetail: [],
@@ -23,6 +24,7 @@ export const initialState = {
     , email: ''
     , fullname: ''
     , islogin: 0
+    , userimg: ''
     , id: ''
     , fbid: ''
     , activeaddress: 0
@@ -99,6 +101,13 @@ export default function appdataReducer(state = initialState, action) {
         return {
           ...state,
           pendingcount: action.pendingcount,
+        };
+      }
+      case 'SHOPNOTI':
+      if (action.shopnoti) {
+        return {
+          ...state,
+          shopnoti: action.shopnoti,
         };
       }
       else {

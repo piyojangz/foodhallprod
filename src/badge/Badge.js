@@ -15,6 +15,7 @@ import { AppSizes, AppColors, AppStyles } from '@theme/';
 const mapStateToProps = state => ({
   _incommingcount: state.appdataReducer.incommingcount,
   _pendingcount: state.appdataReducer.pendingcount,
+  _shopnoti: state.appdataReducer.shopnoti,
 });
 
 
@@ -46,6 +47,21 @@ class CustomBadge extends Component {
               fontSize: 8, color: '#fff'
             }}>
               {this.props._pendingcount}
+            </Text>
+          </View>);
+        }
+        else {
+          return (<View></View>);
+        }
+
+        break;
+      case "SHOP":
+        if (this.props._shopnoti > 0) {
+          return (<View style={{ position: 'absolute', top: 0, right: 0, backgroundColor: '#F00', width: 16, height: 16, borderRadius: 8, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
+            <Text style={{
+              fontSize: 8, color: '#fff'
+            }}>
+              {this.props._shopnoti}
             </Text>
           </View>);
         }

@@ -283,7 +283,7 @@ class Shopfirstsetting extends Component {
 
           leftButtonIcon={require('../../assets/images/ic_left-arrow.png')}
           leftButtonTitle={'back'}
-          onLeftButtonPress={Actions.profile}
+          onLeftButtonPress={Actions.shoplist}
           leftButtonTitleColor={'#fff'}
         />
 

@@ -26,6 +26,8 @@ import StyleGuide from '@containers/StyleGuideView';
 import Recipes from '@containers/recipes/Browse/BrowseContainer';
 import RecipeView from '@containers/recipes/RecipeView';
 import Noti from '@components/general/noti/Noti';
+import Shoplist from '@components/general/Shoplist';
+
 const navbarPropsTabs = {
   ...AppConfig.navbarProps,
   renderLeftButton: () => <NavbarMenuButton />,
@@ -94,9 +96,20 @@ const scenes = (
       })}
       analyticsDesc={'Error: Example Error'} /> */}
 
-
+      <Scene
+      key={'shoplist'}
+      {...navbarPropsTabs}
+      hideNavBar={true}
+      title={'SHOP'}
+      component={Shoplist}
+      icon={props => TabIcon({
+        ...props,
+        icon: 'store',
+        title: 'SHOP', 
+      })} />
     <Scene
       {...navbarPropsTabs}
+      
       key={'profile'}
       hideNavBar={true}
       title={'PROFILE'}
@@ -106,6 +119,9 @@ const scenes = (
         icon: 'face',
         title: 'PROFILE'
       })} />
+
+
+    
 
   </Scene>
 );

@@ -49,7 +49,7 @@ import { AppColors, AppStyles, AppSizes } from '@theme/';
 //Action
 import * as appdataActions from '@redux/appdata/actions';
 // Components
-
+import { Grid, Col, Row } from 'react-native-easy-grid';
 import {
   Alerts,
   Card,
@@ -78,6 +78,20 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 50,
   },
+  row: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderColor: '#d7d7d7',
+  },
+  selectionText: {
+    fontSize: 15,
+    color: '#b5b5b5',
+    textAlign: 'right',
+    justifyContent: 'flex-end',
+    flex: .2
+  },
+
 });
 
 function numberWithCommas(x) {
@@ -124,50 +138,27 @@ class Setting extends Component {
       timeopen: '',
       timeclose: '',
       minprice: 0,
+      deriveryfee: 0,
       location: undefined,
       shopdetail: undefined,
-      isDateTimePickerVisibleOpen: false,
-      isDateTimePickerVisibleClose: false,
       isdelivery: false,
       ispickup: false,
       isimmediatedelivery: false,
       isonedaydelivery: false,
+      mon: {},
+      tue: {},
+      wed: {},
+      thu: {},
+      fri: {},
+      sat: {},
+      sun: {},
     }
   }
-
-  _handleDatePickedOpen = (date) => {
-    var d = new Date(date);
-    var n = ('0' + d.getHours()).slice(-2) + ":"
-      + ('0' + d.getMinutes()).slice(-2) + ":" + ('0' + d.getSeconds()).slice(-2);
-    console.log(n);
-    this.setState({ isDateTimePickerVisibleOpen: false, shopdetail: { ...this.state.shopdetail, timeopen: n }, timeopen: n })
-  };
-
-  _handleDatePickedClose = (date) => {
-    var d = new Date(date);
-    var n = ('0' + d.getHours()).slice(-2) + ":"
-      + ('0' + d.getMinutes()).slice(-2) + ":" + ('0' + d.getSeconds()).slice(-2);
-    console.log(n);
-    this.setState({ isDateTimePickerVisibleClose: false, shopdetail: { ...this.state.shopdetail, timeclose: n }, timeclose: n })
-  };
-
-  _showDateTimePickerOpen = () => this.setState({ isDateTimePickerVisibleOpen: true });
-
-  _hideDateTimePickerOpen = () => this.setState({ isDateTimePickerVisibleOpen: false });
-
-  _showDateTimePickerClose = () => this.setState({ isDateTimePickerVisibleClose: true });
-
-  _hideDateTimePickerClose = () => this.setState({ isDateTimePickerVisibleClose: false });
-
-
-  _handleDatePicked = (date) => {
-    console.log('A date has been picked: ', date);
-    this._hideDateTimePicker();
-  };
 
 
   componentWillReceiveProps(props) {
 
+    console.log(props);
     if (props.locationReload) {
       this.setState({ location: props.location.coords });
       setTimeout(
@@ -176,6 +167,36 @@ class Setting extends Component {
         },
         1500
       );
+    }
+
+    if (props.workingdayreload) {
+      switch (props.day) {
+        case 'MON':
+          this.setState({ mon: { ...this.state.mon, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'TUE':
+          this.setState({ tue: { ...this.state.tue, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'WED':
+          this.setState({ wed: { ...this.state.wed, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'THU':
+          this.setState({ thu: { ...this.state.thu, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'FRI':
+          this.setState({ fri: { ...this.state.fri, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'SAT':
+          this.setState({ sat: { ...this.state.sat, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+        case 'SUN':
+          this.setState({ sun: { ...this.state.sun, isactive: props.isactive, timeclose: props.close, timeopen: props.open } });
+          break;
+
+        default:
+          break;
+      }
+
     }
   }
 
@@ -208,6 +229,14 @@ class Setting extends Component {
       timeopen: this.props._shopdetail.timeopen,
       timeclose: this.props._shopdetail.timeclose,
       minprice: this.props._shopdetail.minprice,
+      deriveryfee: this.props._shopdetail.deriveryfee,
+      mon: { day: 'MON', isactive: this.props._shopdetail.workingdays[1].isactive, timeclose: this.props._shopdetail.workingdays[1].timeclose, timeopen: this.props._shopdetail.workingdays[1].timeopen },
+      tue: { day: 'TUE', isactive: this.props._shopdetail.workingdays[2].isactive, timeclose: this.props._shopdetail.workingdays[2].timeclose, timeopen: this.props._shopdetail.workingdays[2].timeopen },
+      wed: { day: 'WED', isactive: this.props._shopdetail.workingdays[3].isactive, timeclose: this.props._shopdetail.workingdays[3].timeclose, timeopen: this.props._shopdetail.workingdays[3].timeopen },
+      thu: { day: 'THU', isactive: this.props._shopdetail.workingdays[4].isactive, timeclose: this.props._shopdetail.workingdays[4].timeclose, timeopen: this.props._shopdetail.workingdays[4].timeopen },
+      fri: { day: 'FRI', isactive: this.props._shopdetail.workingdays[5].isactive, timeclose: this.props._shopdetail.workingdays[5].timeclose, timeopen: this.props._shopdetail.workingdays[5].timeopen },
+      sat: { day: 'SAT', isactive: this.props._shopdetail.workingdays[6].isactive, timeclose: this.props._shopdetail.workingdays[6].timeclose, timeopen: this.props._shopdetail.workingdays[6].timeopen },
+      sun: { day: 'SUN', isactive: this.props._shopdetail.workingdays[0].isactive, timeclose: this.props._shopdetail.workingdays[0].timeclose, timeopen: this.props._shopdetail.workingdays[0].timeopen },
     });
 
   }
@@ -277,12 +306,20 @@ class Setting extends Component {
       lng: this.state.location.longitude,
       radius: this.state.radius,
       minprice: this.state.minprice,
+      //deriveryfee: this.state.deriveryfee,
       timeopen: this.state.timeopen, // เพิ่ม
       timeclose: this.state.timeclose, // เพิ่ม
       isdelivery: this.state.isdelivery ? 1 : 0, // เพิ่ม
       ispickup: this.state.ispickup ? 1 : 0, // เพิ่ม
       isimmediatedelivery: this.state.isimmediatedelivery ? 1 : 0, // เพิ่ม
       isonedaydelivery: this.state.isonedaydelivery ? 1 : 0, // เพิ่ม
+      mon: JSON.stringify(this.state.mon),
+      tue: JSON.stringify(this.state.tue),
+      wed: JSON.stringify(this.state.wed),
+      thu: JSON.stringify(this.state.thu),
+      fri: JSON.stringify(this.state.fri),
+      sat: JSON.stringify(this.state.sat),
+      sun: JSON.stringify(this.state.sun),
     };
 
     var formData = new FormData();
@@ -313,9 +350,7 @@ class Setting extends Component {
         return responseData;
       })
       .then((data) => {
-        console.log(data);
         this.setState({ loading: false });
-
         Actions.pop({ refresh: { isreload: true } });
       }).done();
 
@@ -324,6 +359,15 @@ class Setting extends Component {
 
   }
 
+
+  setWorkingtime(day, open, close, isactive) {
+    Actions.setworkingtime({
+      'day': day
+      , 'open': open
+      , 'close': close
+      , 'isactive': isactive
+    });
+  }
 
   render = () => {
     return (
@@ -392,7 +436,7 @@ class Setting extends Component {
 
             <View style={[AppStyles.paddingHorizontal]}>
               <Spacer size={15} />
-              <FormLabel>รัศมีการให้บริการ (กิโลเมตร) <Text style={{color:'#f00'}}>*</Text></FormLabel>
+              <FormLabel>รัศมีการให้บริการ (กิโลเมตร) <Text style={{ color: '#f00' }}>*</Text></FormLabel>
               <Text>
                 {this.state.radius} กิโลเมตร
               </Text>
@@ -409,40 +453,247 @@ class Setting extends Component {
 
             <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
-              <FormLabel>ชื่อร้านค้า <Text style={{color:'#f00'}}>*</Text></FormLabel>
+              <FormLabel>ชื่อร้านค้า <Text style={{ color: '#f00' }}>*</Text></FormLabel>
               <FormInput placeholder={'ระบุชื่อร้านค้า'} value={this.state.title} onChangeText={title => this.setState({ title })} />
             </View>
 
             <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
-              <FormLabel>อธิบายรายละเอียดร้านค้า <Text style={{color:'#f00'}}>*</Text></FormLabel>
+              <FormLabel>อธิบายรายละเอียดร้านค้า <Text style={{ color: '#f00' }}>*</Text></FormLabel>
               <FormInput placeholder={'ระบุคำอธิบายร้านค้า'} value={this.state.description} onChangeText={description => this.setState({ description })} multiline={true} style={{ marginRight: 0, }} />
             </View>
 
-            <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
+
+
+            <View style={{ marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
-              <FormLabel>เวลาเปิด <Text style={{color:'#f00'}}>*</Text></FormLabel>
-              <TouchableOpacity onPress={this._showDateTimePickerOpen}>
-                <Text>{this.state.shopdetail.timeopen}</Text>
+              <FormLabel>เวลาเปิด-ปิด <Text style={{ color: '#f00' }}>*</Text></FormLabel>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('MON', this.state.mon.timeopen, this.state.mon.timeclose, this.state.mon.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.mon.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>จ. {this.state.mon.timeopen} - {this.state.mon.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.setWorkingtime('TUE', this.state.tue.timeopen, this.state.tue.timeclose, this.state.tue.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.tue.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>อ. {this.state.tue.timeopen} - {this.state.tue.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('WED', this.state.wed.timeopen, this.state.wed.timeclose, this.state.wed.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.wed.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>พ. {this.state.wed.timeopen} - {this.state.wed.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('THU', this.state.thu.timeopen, this.state.thu.timeclose, this.state.thu.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.thu.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>พฤ. {this.state.thu.timeopen} - {this.state.thu.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('FRI', this.state.fri.timeopen, this.state.fri.timeclose, this.state.fri.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.fri.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>ศ. {this.state.fri.timeopen} - {this.state.fri.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('SAT', this.state.sat.timeopen, this.state.sat.timeclose, this.state.sat.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.sat.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>ส. {this.state.sat.timeopen} - {this.state.sat.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => this.setWorkingtime('SUN', this.state.sun.timeopen, this.state.sun.timeclose, this.state.sun.isactive)}>
+                <View style={[styles.row, { backgroundColor: this.state.sun.isactive == '1' ? '#87D37C' : '#FFF' }]}>
+
+                  <Grid style={{ padding: 16, }}>
+                    <Row>
+                      <Text>อา. {this.state.sun.timeopen} - {this.state.sun.timeclose}</Text>
+                    </Row>
+                    <Icon
+                      name={'angle-right'}
+                      size={35}
+                      rot
+                      color={'#ddd'}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        right: 10,
+                        top: 12
+                      }} />
+                  </Grid>
+                </View>
+              </TouchableOpacity>
+
+
+
             </View>
 
 
-            <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
-              <Spacer size={15} />
-              <FormLabel>เวลาปิด <Text style={{color:'#f00'}}>*</Text></FormLabel>
-              <TouchableOpacity onPress={this._showDateTimePickerClose}>
-                <Text>{this.state.shopdetail.timeclose}</Text>
-              </TouchableOpacity>
-            </View>
+
+
+
 
 
             <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
-              <FormLabel>จำนวนสั่งขั้นต่ำ/บาท (ใส่ 0 กรณีไม่มีขั้นต่ำ) <Text style={{color:'#f00'}}>*</Text></FormLabel>
+              <FormLabel>จำนวนสั่งขั้นต่ำ/บาท (ใส่ 0 กรณีไม่มีขั้นต่ำ) <Text style={{ color: '#f00' }}>*</Text></FormLabel>
               <FormInput keyboardType={'numeric'} placeholder={'0'} value={this.state.minprice} onChangeText={minprice => this.setState({ minprice })} />
             </View>
 
+            {/* <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
+              <Spacer size={15} />
+              <FormLabel>ค่าบริการจัดส่ง <Text style={{ color: '#f00' }}>*</Text></FormLabel>
+              <FormInput keyboardType={'numeric'} placeholder={'0'} value={this.state.deriveryfee} onChangeText={deriveryfee => this.setState({ deriveryfee })} />
+            </View> */}
+            <Spacer size={15} />
+            <TouchableOpacity>
+              <View style={[styles.row]}>
+
+              <Grid style={{ padding: 16, }} onPress={Actions.setshippingmethod}>
+                  <Row>
+                    <Text><Icon
+                    name={'motorcycle'}
+                    size={20}
+                    rot
+                    color={'#000'}  /> ค่าบริการจัดส่ง</Text>
+                  </Row>
+                  <Icon
+                    name={'angle-right'}
+                    size={35}
+                    rot
+                    color={'#ddd'}
+                    style={{
+                      position: 'absolute',
+                      backgroundColor: 'rgba(0,0,0,0)',
+                      right: 10,
+                      top: 12
+                    }} />
+                </Grid>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={[styles.row ]}>
+
+                <Grid style={{ padding: 16, }} onPress={Actions.setpaymentmethod}>
+                  <Row>
+                    <Text> <Icon
+                    name={'credit-card-alt'}
+                    size={18}
+                    rot
+                    color={'#000'}  /> ช่องทางการชำระเงิน</Text>
+                  </Row>
+                  <Icon
+                    name={'angle-right'}
+                    size={35}
+                    rot
+                    color={'#ddd'}
+                    style={{
+                      position: 'absolute',
+                      backgroundColor: 'rgba(0,0,0,0)',
+                      right: 10,
+                      top: 12
+                    }} />
+                </Grid>
+              </View>
+            </TouchableOpacity>
 
             <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
@@ -514,25 +765,7 @@ class Setting extends Component {
               </View>
             </View>
 
-            <DateTimePicker
-              is24Hour={true}
-              date={new Date(moment().format('Y-MM-D ' + this.state.shopdetail.timeopen))}
-              mode={'time'}
-              titleIOS={'เลือกเวลาเปิดร้าน'}
-              isVisible={this.state.isDateTimePickerVisibleOpen}
-              onConfirm={this._handleDatePickedOpen}
-              onCancel={this._hideDateTimePickerOpen}
-            />
 
-            <DateTimePicker
-              is24Hour={true}
-              date={new Date(moment().format('Y-MM-D ' + this.state.shopdetail.timeclose))}
-              mode={'time'}
-              titleIOS={'เลือกเวลาปิดร้าน'}
-              isVisible={this.state.isDateTimePickerVisibleClose}
-              onConfirm={this._handleDatePickedClose}
-              onCancel={this._hideDateTimePickerClose}
-            />
 
 
           </KeyboardAvoidingView>

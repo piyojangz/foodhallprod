@@ -279,23 +279,39 @@ class Pendingorder extends Component {
     );
   }
 
-  renderOrdertype(rowData) {
-    if (rowData.pickuptime > 0) {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='map-pin' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับกลับ</Text></View>)
+  renderPayment(data) {
+    var payment = [];
+    if (data.paidtype.toUpperCase() == 'CASH') {
+      payment.push(<View key={data.id + 'cash'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับเงินสด</Text>
+      </View>);
+
     }
-    else {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='motorcycle' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
-      </View>)
+    if (data.paidtype.toUpperCase() == 'BANK') {
+      payment.push(<View key={data.id + 'bank'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> โอนเงิน</Text>
+      </View>);
     }
 
+    return payment;
+  }
+
+  renderOrdertype(rowData) {
+    if (rowData.pickuptime > 0) {
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='map-pin' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับกลับ <Text style={{ fontSize: 18, color: "#F00", }}> ({rowData.pickuptime} นาที)</Text></Text></View>)
+    }
+    else {
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='motorcycle' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
+      </View>)
+    }
   }
 
 

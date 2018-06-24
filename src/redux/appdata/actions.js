@@ -57,3 +57,9 @@ export function pendingcount() {
     type: 'PENDINGCOUNT',
   };
 }
+
+export function shopnoti() {
+  return {
+    type: 'SHOPNOTI',
+  };
+}

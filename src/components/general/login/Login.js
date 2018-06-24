@@ -105,6 +105,7 @@ class Login extends Component {
       userdetail: null,
       emailortel: '',
       password: '',
+      userimg: '',
       loading: false,
       tel: '',
       name: '',
@@ -215,9 +216,9 @@ class Login extends Component {
         return responseData;
       })
       .then((data) => {
-        if (data.result) { 
+        if (data.result) {
           this.setState({ loading: false, });
-          if (data.result.tel == '') { 
+          if (data.result.tel == '') {
             this
               .props
               .dispatch({
@@ -237,7 +238,8 @@ class Login extends Component {
             AsyncStorage.setItem("userdetail", JSON.stringify({
               tel: data.result.tel
               , email: data.result.email
-              , activeaddress: data.result.lat
+              , userimg: data.result.user_img
+              , activeaddress: data.result.activeaddress
               , lat: data.result.lat
               , lng: data.result.lng
               , islogin: 1
@@ -304,6 +306,7 @@ class Login extends Component {
       , fullname: ''
       , islogin: 0
       , address: ''
+      , userimg: ''
       , id: ''
       , fbid: ''
       , shopid: ''
@@ -364,32 +367,32 @@ class Login extends Component {
                   <FormInput placeholder='รหัสผ่าน' secureTextEntry={true} onChangeText={password => this.setState({ password })} />
                 </View>
               </View>
+              <View style={{ justifyContent:'space-between',flexDirection: 'row',}}>
+                <TouchableOpacity onPress={() => this.login()} >
+                  <View style={{ height: 40, backgroundColor: '#F3C42C', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 24, padding: 10, width: AppSizes.screen.width / 2.8, borderRadius: 25,margin:5 }}>
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,1)",
+                        fontSize: 14,
+                        fontWeight: "normal",
+                        fontFamily: 'Helvetica Neue',
+                      }}>เข้าสู่ระบบ </Text>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => this.login()} >
-                <View style={{ height: 40, backgroundColor: '#F3C42C', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 24, padding: 10, width: 300, borderRadius: 25 }}>
-                  <Text
-                    style={{
-                      color: "rgba(255,255,255,1)",
-                      fontSize: 14,
-                      fontWeight: "normal",
-                      fontFamily: 'Helvetica Neue',
-                    }}>เข้าสู่ระบบ </Text>
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => this.fblogin()} >
-                <View style={{ height: 40, backgroundColor: '#4267b2', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 24, padding: 10, width: 300, borderRadius: 25 }}>
-                  <Icon name="logo-facebook" style={{ color: "#FFF" }} />
-                  <Text
-                    style={{
-                      color: "rgba(255,255,255,1)",
-                      fontSize: 14,
-                      fontWeight: "normal",
-                      fontFamily: 'Helvetica Neue',
-                    }}>     Log in with Facebook</Text>
-                </View>
-              </TouchableOpacity>
-
+                <TouchableOpacity onPress={() => this.fblogin()} >
+                  <View style={{ height: 40, backgroundColor: '#4267b2', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 24, padding: 10, width: AppSizes.screen.width / 2.8, borderRadius: 25,margin:5 }}>
+                    <Icon name="logo-facebook" style={{ color: "#FFF" }} />
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,1)",
+                        fontSize: 14,
+                        fontWeight: "normal",
+                        fontFamily: 'Helvetica Neue',
+                      }}> Facebook login</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
 
               <TouchableOpacity onPress={Actions.otp} >
                 <Text

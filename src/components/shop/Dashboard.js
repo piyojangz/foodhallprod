@@ -124,28 +124,36 @@ class Dashboard extends Component {
       dataSourceItems: ds,
       shopid: undefined,
       shopstatus: false,
-      loading: false
+      loading: false,
+      isreload: false,
+      warning: '',
     }
   }
 
 
 
-  // componentWillReceiveProps(props) {
-  //   if (props.isreload) {
+  componentWillReceiveProps(props) {
+    if (props.isreload && this.state.isreload == false) {
 
-  //       setTimeout(
-  //         () => { this._onRefresh(); },
-  //         1500
-  //       ); 
-  //   } 
-  // }
+      setTimeout(
+        () => { this._onRefresh(); },
+        500
+      );
+    }
+    if (props.reload && this.state.isreload == false) {
+      setTimeout(
+        () => { this._onRefresh(); },
+        500
+      );
+    }
+  }
 
 
   _onRefresh() {
     this.setState({ refreshing: true });
     this._loadInitialDataAsync().then((data) => {
       this._onReadyAsync(data).then(() => {
-        this.setState({ refreshing: false });
+        this.setState({ refreshing: false, isreload: true });
       });
     });
 
@@ -225,14 +233,17 @@ class Dashboard extends Component {
   }
 
   additem = () => {
+    this.setState({ isreload: false });
     Actions.additem({ itemdetail: undefined });
   }
 
   edititem = (data) => {
+    this.setState({ isreload: false });
     Actions.additem({ itemdetail: data });
   }
 
   editcover = (data) => {
+    this.setState({ isreload: false });
     Actions.addcover({ itemdetail: data });
   }
 
@@ -322,27 +333,27 @@ class Dashboard extends Component {
       this.setState({ shopstatus: false });
     }
     else {
-      if(this.state.shopstatus == false){
-        if(parseInt(this.props._shopdetail.coin) > 50){
+      if (this.state.shopstatus == false) {
+        if (parseInt(this.props._shopdetail.coin) > 50) {
           this.sendshopstatus(status);
         }
-        else{
+        else {
           Alert.alert(
             'FoodHall แจ้งเตือน',
             'ไม่สามารถเปิดร้านได้เนื่องจากคุณมี coin น้อยกว่า 50',
             [{
               text: 'ปิด',
               onPress: null,
-            } 
+            }
             ]
           );
         }
       }
-      else{
+      else {
         this.sendshopstatus(status);
       }
-   
-     
+
+
     }
 
   }
@@ -437,11 +448,65 @@ class Dashboard extends Component {
     Actions.dopurchase();
   }
 
+  checkworkingdays(data) {
+    var cnt = 0;
+    data.workingdays.forEach(function (element) {
+      console.log('element', element.isactive);
+      if (element.isactive == '1') {
+        cnt++;
+      }
+    }, this);
+
+    if (cnt == 0) {
+      this.setState({ warning: true });
+      return 'วันเวลาเปิด-ปิด,';
+    }
+    else {
+      return '';
+    }
+
+  }
+
+  checkpaymentmethod(data) {
+    console.log('checkpaymentmethod', data);
+    if (data.bankaccept == '0' && data.cashaccept == '0') {
+      this.setState({ warning: true });
+      return 'ช่องทางการชำระเงิน';
+    }
+    else {
+      return '';
+    }
+
+  }
+
+  renderwarning() {
+    if (this.state.warning != '') {
+      return (
+        <View style={{ backgroundColor: '#D64541', padding: 5, }}>
+          <Text style={{ color: '#fff', fontSize: 12 }}>
+            <Icon name={'warning'}
+              size={12}
+              rot
+              color={'#fff'} />   กรุณาตั้งค่า : {this.state.warning}
+          </Text>
+        </View>
+      )
+    }
+    else {
+      return (
+        <View />
+      )
+    }
+
+  }
+
+
   renderRow = (data, s, index) => {
     console.log(data);
     if (index == 0) {
       return (
         <View>
+          {this.renderwarning()}
           <TouchableWithoutFeedback onPress={() => this.editcover(data)}>
             <Image
               style={{
@@ -450,7 +515,14 @@ class Dashboard extends Component {
               resizeMode={"cover"}
               source={{
                 uri: AppConfig.imgaddress + data.img
-              }} />
+              }} >
+              <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderTopLeftRadius: 5, paddingLeft: 10, paddingRight: 10, position: 'absolute', bottom: 0, right: 0 }}>
+                <Text size={12}> <Icon name={'camera'}
+                  size={12}
+                  rot
+                  color={'#000'} /> แก้ไข</Text>
+              </View>
+            </Image>
           </TouchableWithoutFeedback>
           <View style={{ backgroundColor: '#fff', padding: 8, borderBottomColor: '#D7D7D7', borderBottomWidth: 1 }}>
             <Text style={{ fontSize: 18, fontWeight: 'normal', textAlign: 'center' }}>{data.title}</Text>
@@ -459,7 +531,7 @@ class Dashboard extends Component {
           <View style={{ backgroundColor: '#fff', padding: 8, borderBottomColor: '#D7D7D7', borderBottomWidth: 1 }}>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 20, paddingRight: 20 }}>
-              <Text style={{ fontSize: 14, fontWeight: 'normal', textAlign: 'center' }}>สถานะร้าน เปิด/ปิด</Text>
+              <Text style={{ fontSize: 14, fontWeight: 'normal', textAlign: 'center' }}>สถานะร้าน ใช้งาน/ไม่ใช้งาน</Text>
               <Switch
                 size={20}
                 value={this.state.shopstatus}
@@ -480,11 +552,11 @@ class Dashboard extends Component {
           </View>
           <View style={{ backgroundColor: '#fff', padding: 8, paddingLeft: 20, paddingRight: 20, justifyContent: 'space-between', flexDirection: 'row', }}>
             <View style={{ justifyContent: 'center' }}>
-              <Text style={{ fontSize: 14, fontWeight: 'normal', textAlign: 'left' }}>ขณะนี้คุณมี Coin คงเหลือ : <Image style={{ width: (Platform.OS === 'ios') ? 20 : 60, height: (Platform.OS === 'ios') ? 20 : 60, }} source={require('../../assets/images/ic_coin.png')} /><Text style={{ fontWeight: 'bold' }}>  {numberWithCommas(data.coin)}</Text></Text>
+              <Text style={{ fontSize: 14, fontWeight: 'normal', textAlign: 'left' }}>Coin คงเหลือ : <Image style={{ width: (Platform.OS === 'ios') ? 20 : 60, height: (Platform.OS === 'ios') ? 20 : 60, }} source={require('../../assets/images/ic_coin.png')} /><Text style={{ fontWeight: 'bold' }}>  {numberWithCommas(data.coin)}</Text></Text>
             </View>
             <View>
               <Button
-                style={{ width: 90 }} 
+                style={{ width: 90 }}
                 borderColor={'#00B16A'}
                 color={'#00B16A'}
                 small
@@ -512,22 +584,52 @@ class Dashboard extends Component {
     }
   }
 
+
+
+  renderactive(isactive) {
+    if (isactive == '0') {
+      return (
+        <View style={{
+          position: 'absolute', left: 0,
+          top: 0, bottom: 0, right: 0
+          , alignItems: 'center', flexDirection: 'row', justifyContent: 'center', backgroundColor: 'rgba(52, 52, 52, 0.5)',
+        }}>
+          <Text numberOfLines={1} style={{
+            textAlign: 'center',
+            color: '#fff',
+            fontSize: 14,
+            fontWeight: 'normal'
+          }}>ไม่ใช้งาน</Text>
+        </View>
+      )
+    }
+    else {
+      return (
+        <View />
+      )
+    }
+  }
+
+
   _renderRow = (rowData, s, index) => {
     console.log(rowData);
     if (rowData.id != 0) {
       return (
         <TouchableWithoutFeedback onPress={() => this.edititem(rowData)}>
-          <View style={{ backgroundColor: '#fff', height: 100, justifyContent: 'center', alignItems: 'center', margin: 10, borderRadius: 5, }}>
-            <Image
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-                resizeMode: 'cover',
-                borderRadius: 5,
-              }}
-              source={{
-                uri: AppConfig.imgaddress + rowData.img
-              }} />
+          <View>
+            <View style={{ backgroundColor: '#fff', height: 100, justifyContent: 'center', alignItems: 'center', margin: 10, borderRadius: 5, }}>
+              <Image
+                style={{
+                  flex: 1,
+                  aspectRatio: 1,
+                  resizeMode: 'cover',
+                  borderRadius: 5,
+                }}
+                source={{
+                  uri: AppConfig.imgaddress + rowData.img
+                }} />
+            </View>
+            {this.renderactive(rowData.isactive)}
           </View>
         </TouchableWithoutFeedback>
       );
@@ -561,6 +663,12 @@ class Dashboard extends Component {
       }
     }
 
+  }
+
+
+  setting() {
+    this.setState({ isreload: false });
+    Actions.shopsetting();
   }
 
 
@@ -608,7 +716,7 @@ class Dashboard extends Component {
           titleColor={'#fff'}
           backgroundColor={AppColors.brand.shopprimary}
           rightButtonTitle={'ตั้งค่า'}
-          onRightButtonPress={Actions.shopsetting}
+          onRightButtonPress={() => this.setting()}
           rightButtonTitleColor={'#fff'}
         />
         <View style={{ marginTop: 64, flex: 1, }}>
@@ -657,10 +765,13 @@ class Dashboard extends Component {
       }
       data.result.items.splice(data.result.items.length, 0, { id: 0, locked: true });
 
+      var warning = this.checkworkingdays(shop[0]) + this.checkpaymentmethod(shop[0]);
+
       this.setState({
+        warning: warning,
         dataSource: this.state.dataSource.cloneWithRows(shop),
         dataSourceItems: this.state.dataSource.cloneWithRows(data.result.items),
-        shopstatus: (data.result.isshopopen == 'true' && parseInt(data.result.coin) > 50 ? true : false)
+        shopstatus: (data.result.isactive == 'true' && parseInt(data.result.coin) > 50 ? true : false)
       }, resolve);
     });
   }

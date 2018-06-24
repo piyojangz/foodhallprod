@@ -120,6 +120,7 @@ class Additem extends Component {
       id: '',
       title: '',
       price: '',
+      isactive: '',
       imgchange: false
     }
   }
@@ -130,6 +131,7 @@ class Additem extends Component {
       console.log(this.props.itemdetail);
       this.setState({
         id: this.props.itemdetail.id,
+        isactive: this.props.itemdetail.isactive,
         title: this.props.itemdetail.title,
         price: this.props.itemdetail.price,
         imgsrc: AppConfig.imgaddress + this.props.itemdetail.img
@@ -141,9 +143,7 @@ class Additem extends Component {
 
   }
 
-  delete() {
-
-
+  delete() { 
     Alert.alert(
       'Foodhall Message',
       'คุณต้องการลบไอเท็มนี้?',
@@ -157,6 +157,7 @@ class Additem extends Component {
             var params = {
               shopid: this.state.shopdetail.id,
               itemid: this.state.id,
+              isactive: this.state.isactive,
               txttitle: this.state.title,
               txtprice: this.state.price, // เพิ่ม 
               isdelete: 1,
@@ -193,7 +194,7 @@ class Additem extends Component {
                 console.log(data);
                 this.setState({ loading: false });
 
-                Actions.pop({ refresh: { Reload: true } });
+                Actions.pop({ refresh: { reload: true } });
               }).done();
 
 
@@ -237,6 +238,7 @@ class Additem extends Component {
         var params = {
           shopid: this.state.shopdetail.id,
           itemid: this.state.id,
+          isactive: this.state.isactive,
           txttitle: this.state.title,
           txtprice: this.state.price, // เพิ่ม  
           isdelete: 0,
@@ -280,7 +282,7 @@ class Additem extends Component {
             console.log(data);
             this.setState({ loading: false });
 
-            Actions.pop({ refresh: { Reload: true } });
+            Actions.pop({ refresh: { reload: true } });
           }).done();
 
       }
@@ -318,7 +320,14 @@ class Additem extends Component {
   renderimg() {
     if (this.state.imgsrc != undefined) {
       return (
-        <Image style={{ height: AppSizes.screen.width, width: AppSizes.screen.width }} source={{ uri: this.state.imgsrc }} />
+        <Image style={{ height: AppSizes.screen.width, width: AppSizes.screen.width }} source={{ uri: this.state.imgsrc }} >
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderTopLeftRadius: 5, paddingLeft: 10, paddingRight: 10, position: 'absolute', bottom: 0, right: 0 }}>
+                <Text size={12}> <Icon name={'camera'}
+                  size={12}
+                  rot
+                  color={'#000'} /> แก้ไข</Text>
+              </View>
+              </Image>
       )
     }
     else {
@@ -391,6 +400,21 @@ class Additem extends Component {
 
             <View style={{ borderBottomColor: '#C2CBCF', borderBottomWidth: 1, marginLeft: 25, marginRight: 25, }}>
               <Spacer size={15} />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, }}>
+                <FormLabel>สถานะ ใช้งาน / ไม่ใช้งาน</FormLabel>
+                <Switch
+                  value={this.state.isactive == '1' ? true : false}
+                  onValueChange={val => this.setState({ isactive: val ? '1' : 0 })}
+                  disabled={false}
+                  activeText={'On'}
+                  inActiveText={'Off'}
+                  backgroundActive={'green'}
+                  backgroundInactive={'gray'}
+                  circleActiveColor={'#30a566'}
+                  circleInActiveColor={'#000000'}
+                />
+              </View>
+              <Spacer size={35} />
               {this.deletebtn()}
 
               <Spacer size={15} />

@@ -14,9 +14,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  TouchableWithoutFeedback,
   Platform, AsyncStorage
 } from 'react-native';
 import NavigationBar from 'react-native-navigation-bar';
+import { AppConfig } from '@constants/';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
 import { SocialIcon } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
@@ -99,18 +101,70 @@ class Profile extends Component {
   }
 
   componentWillReceiveProps(props) {
-    AsyncStorage.getItem("userdetail").then((value) => {
-      if (value != null) {
-        this.setState({ userdetail: JSON.parse(value) });
-        this.setState({ shippingaddress: this.props._user.address });
-      }
-    }).done();
+
+    console.log(this.state.userdetail);
+    if (props.reload) {
+
+      this.setState({ userdetail: { ...this.state.userdetail, userimg: props.image } });
+
+      //this.props.dispatch({ type: 'USER', user: this.state.userdetail });
+
+      AsyncStorage.setItem("userdetail", JSON.stringify({
+        tel: this.state.userdetail.tel
+        , email: this.state.userdetail.email
+        , userimg: props.image
+        , activeaddress: this.state.userdetail.activeaddress
+        , lat: this.state.userdetail.lat
+        , lng: this.state.userdetail.lng
+        , islogin: 1
+        , name: this.state.userdetail.name
+        , id: this.state.userdetail.id
+        , address: this.state.userdetail.address
+        , fbid: this.state.userdetail.fbid
+        , shopid: this.state.userdetail.shopid,
+      }));
+
+
+
+    }
+    else {
+      AsyncStorage.getItem("userdetail").then((value) => {
+        if (value != null) {
+          this.setState({ userdetail: JSON.parse(value) });
+          this.setState({ shippingaddress: this.props._user.address });
+        }
+      }).done();
+    }
+
   }
 
   componentWillMount() {
+    console.log('this.props', this.props.name);
     this.setState({ userdetail: this.props._user });
     this.setState({ shippingaddress: this.props._user.address });
   }
+
+
+
+  componentDidMount() {
+    if (this.props.name == 'shop') {
+      if (this.state.userdetail.islogin == 1) {
+        if (this.state.userdetail.shopid == null) {
+          Actions.introduceshop();
+        }
+        else {
+          AsyncStorage.setItem("mode", JSON.stringify({
+            shopmode: 1
+          }));
+          Actions.shopscene();
+        }
+      }
+      else {
+        Actions.login();
+      }
+    }
+  }
+
 
 
   logout() {
@@ -134,6 +188,7 @@ class Profile extends Component {
               tel: ''
               , email: ''
               , name: ''
+              , userimg: ''
               , islogin: 0
               , address: ''
               , id: ''
@@ -145,6 +200,7 @@ class Profile extends Component {
                 tel: ''
                 , email: ''
                 , name: ''
+                , userimg: ''
                 , address: ''
                 , islogin: 0
                 , id: ''
@@ -306,9 +362,6 @@ class Profile extends Component {
         height={(Platform.OS === 'ios') ? 44 : 64}
         titleColor={'#fff'}
         backgroundColor={AppColors.brand.primary}
-        rightButtonTitle={'ร้านค้า'}
-        onRightButtonPress={() => this.swaptoshop()}
-        rightButtonTitleColor={'#fff'}
       />)
     }
     else {
@@ -327,22 +380,42 @@ class Profile extends Component {
     // Actions.shippingaddress({ userdetail: prm });
   }
 
+  editimgprofile = (userdetail) => {
+    Actions.addimgprofile({ userdetail: userdetail });
+  }
+
+
 
   renderprofile() {
     if (this.state.userdetail.islogin == 1) {
-      console.log(this.state.userdetail.fbid);
-      var profileimg = (this.state.userdetail.fbid == '' ? 'http://leafood.servewellsolution.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250');
+      if (this.state.userdetail.userimg != '') {
+        var profileimg = AppConfig.imgaddress + this.state.userdetail.userimg;
+      }
+      else {
+        var profileimg = (this.state.userdetail.fbid == '' || this.state.userdetail.fbid == '0' ? 'http://leafood.servewellsolution.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250');
+      }
+
+      console.log(profileimg);
       return (
         <View>
-          <Image
-            ref={'profileimg'}
-            style={{
-              height: 250,
-            }}
-            resizeMode={"cover"}
-            source={{
-              uri: profileimg
-            }} />
+          <TouchableWithoutFeedback onPress={() => this.editimgprofile(this.state.userdetail)}>
+            <Image
+              ref={'profileimg'}
+              style={{
+                height: 250,
+              }}
+              resizeMode={"cover"}
+              source={{
+                uri: profileimg
+              }} >
+              <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderTopLeftRadius: 5, paddingLeft: 10, paddingRight: 10, position: 'absolute', bottom: 0, right: 0 }}>
+                <Text size={12}> <Icon name={'md-camera'}
+                  size={12}
+                  rot
+                  color={'#000'} /> แก้ไข</Text>
+              </View>
+            </Image>
+          </TouchableWithoutFeedback>
           <View
             style={{
               flexGrow: 1,
@@ -358,7 +431,7 @@ class Profile extends Component {
                 color: '#464646',
                 paddingTop: 4,
                 fontWeight: 'normal'
-              }}>สวัสดี {this.state.userdetail.name}</Text>
+              }}>สวัสดี {this.state.userdetail.name == '0' ? this.state.userdetail.email : this.state.userdetail.name}</Text>
 
             <Text
               style={{
@@ -411,7 +484,7 @@ class Profile extends Component {
             </TouchableOpacity>
 
             <Spacer size={10} />
-            
+
             <View
               style={{
 
@@ -428,11 +501,11 @@ class Profile extends Component {
 
               <View
                 style={{
-                  width:AppSizes.screen.width,
+                  width: AppSizes.screen.width,
                   flexDirection: 'row',
-                  justifyContent: 'space-between', 
-                  paddingRight:50,
-                  paddingLeft:10,
+                  justifyContent: 'space-between',
+                  paddingRight: 50,
+                  paddingLeft: 10,
                   paddingBottom: 10,
                 }}>
 

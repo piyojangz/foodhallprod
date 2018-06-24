@@ -166,7 +166,7 @@ class Shippingaddresslist extends Component {
     this.state = {
       loading: false,
       ds: [],
-      addrlist:[],
+      addrlist: [],
       dataSource: ds,
       refreshing: false,
       isFollowuser: true,
@@ -267,7 +267,7 @@ class Shippingaddresslist extends Component {
         lat: rowData.lat,
         lng: rowData.lng
       }
-    },()=>{
+    }, () => {
       this.setAddress();
     });
   }
@@ -332,7 +332,7 @@ class Shippingaddresslist extends Component {
   }
 
 
-  renderListView = () => { 
+  renderListView = () => {
     if (this.state.addrlist.length == 0) {
       return (
         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
@@ -341,44 +341,48 @@ class Shippingaddresslist extends Component {
       )
 
     }
-    else{
+    else {
       return (
-        <SwipeListView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-          stopLeftSwipe={1}
-          dataSource={this.state.dataSource}
-          renderRow={data => (
-            <TouchableHighlight onPress={() => this.activeAddress(data)}>
-              <View style={styles.rowFront}>
-                <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                  <Text>{data.address}</Text>
-                  {this.renderChecked(data)}
+        <View>
+          <SwipeListView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }
+            stopLeftSwipe={1}
+            dataSource={this.state.dataSource}
+            renderRow={data => (
+              <TouchableHighlight onPress={() => this.activeAddress(data)}>
+                <View style={styles.rowFront}>
+                  <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                    <Text>{data.address}</Text>
+                    {this.renderChecked(data)}
+                  </View>
                 </View>
+              </TouchableHighlight>
+            )}
+            renderHiddenRow={data => (
+              <View style={styles.rowBack}>
+               
+                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.editRow(data)}>
+                  <Text style={{ color: '#fff' }} >แก้ไข</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.deleteRow(data)}>
+                  <Text style={{ color: '#fff' }}>ลบ</Text>
+                </TouchableOpacity>
               </View>
-            </TouchableHighlight>
-          )}
-          renderHiddenRow={data => (
-            <View style={styles.rowBack}>
-              <Text>Left</Text>
-              <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.editRow(data)}>
-                <Text style={{ color: '#fff' }} >แก้ไข</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.deleteRow(data)}>
-                <Text style={{ color: '#fff' }}>ลบ</Text>
-              </TouchableOpacity>
+            )}
+            rightOpenValue={-150}
+          />
+          <View style={{ justifyContent: 'center',paddingTop:15, }}>  
+            <Text style={{ color: '#BFBFBF',textAlign:'center' }}>ปัดซ้ายเพื่อลบ/แก้ไข</Text>
             </View>
-          )}
-          rightOpenValue={-150}
-        />
-  
+        </View>
       )
     }
-  
+
   }
 
   setAddress() {
@@ -396,6 +400,7 @@ class Shippingaddresslist extends Component {
         , lat: this.state.shippingaddress.lat
         , lng: this.state.shippingaddress.lng
         , islogin: 1
+        , userimg: this.props._user.userimg
         , name: this.props._user.name
         , id: this.props._user.id
         , address: this.state.shippingaddress.address
@@ -435,6 +440,7 @@ class Shippingaddresslist extends Component {
             onLoadStartAsync={this._loadInitialDataAsync.bind(this)}
             onReadyAsync={this._onReadyAsync.bind(this)}>
             {this.renderListView()}
+
           </LoadingContainer>
         </View>
         <Spacer size={50} />
@@ -466,7 +472,7 @@ class Shippingaddresslist extends Component {
     return new Promise((resolve) => {
       console.log(data);
       this.setState({
-        addrlist:data.result,
+        addrlist: data.result,
         dataSource: this.state.dataSource.cloneWithRows(data.result),
       }, resolve)
     });

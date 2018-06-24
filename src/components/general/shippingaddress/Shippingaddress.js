@@ -128,7 +128,7 @@ class Shippingaddress extends Component {
   }
 
 
-  setCurrentLoc() { 
+  setCurrentLoc() {
     if (this.props.rowData != null) {
       this.setState({
         position: this.props._location,
@@ -182,136 +182,163 @@ class Shippingaddress extends Component {
   }
 
   propAddress() {
-    if (this.props.editable) {
-      this.setState({ loading: true, });
-      if (this.props._user.islogin == 0) return;
-      var params = {
-        id: this.props.rowData.id,
-        lat: this.state.address.address.geometry.location.lat,
-        lng: this.state.address.address.geometry.location.lng,
-        address: this.state.shippingaddress,
-        isactive: 1,
-      };
-      //console.log(params);
-      var formData = new FormData();
+    if (this.state.shippingaddress == '' || this.state.shippingaddress == undefined) {
+      // Works on both iOS and Android
+      Alert.alert(
+        'Foodhall Message',
+        'กรุณาระบุที่อยู่',
+        [
+          { text: 'รับทราบ', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        ]
+      );
 
-      for (var k in params) {
-        formData.append(k, params[k]);
-      }
-      var request = {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: formData
-      };
-
-      fetch(AppConfig.api + 'api/updatebuyeraddress', request).then((response) => {
-        return response.json() // << This is the problem
-      })
-        .then((responseData) => { // responseData = undefined
-          return responseData;
-        })
-        .then((data) => {
-          console.log(data);
-        }).done(() => {
-          this.setState({ loading: false, });
-          Actions.pop({ refresh: {Reload:true} });
-        });
     }
     else {
-      // this.setState({ loading: true, });
-      // if (this.props._user.islogin == 0) return;
-      // var params = {
-      //   userid: this.props._user.id,
-      //   lat: this.state.address.address.geometry.location.lat,
-      //   lng: this.state.address.address.geometry.location.lng,
-      //   address: this.state.shippingaddress,
-      // };
-      // //console.log(params);
-      // var formData = new FormData();
+      if (this.props.editable) {
+        this.setState({ loading: true, });
+        if (this.props._user.islogin == 0) return;
+        var params = {
+          id: this.props.rowData.id,
+          lat: this.state.address.address.geometry.location.lat,
+          lng: this.state.address.address.geometry.location.lng,
+          address: this.state.shippingaddress,
+          isactive: 1,
+        };
+        //console.log(params);
+        var formData = new FormData();
 
-      // for (var k in params) {
-      //   formData.append(k, params[k]);
-      // }
-      // var request = {
-      //   method: 'POST',
-      //   headers: {
-      //     'Accept': 'application/json',
-      //   },
-      //   body: formData
-      // };
+        for (var k in params) {
+          formData.append(k, params[k]);
+        }
+        var request = {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+          },
+          body: formData
+        };
 
-      // fetch(AppConfig.api + 'api/updateshippingaddress', request).then((response) => {
-      //   return response.json() // << This is the problem
-      // })
-      //   .then((responseData) => { // responseData = undefined
-      //     return responseData;
-      //   })
-      //   .then((data) => {
-      //     console.log(data);
-      //   }).done(() => {
-
-
-      //     AsyncStorage.setItem("userdetail", JSON.stringify({
-      //       tel: this.props._user.tel
-      //       , email: this.props._user.email
-      //       , lat: this.state.address.address.geometry.location.lat
-      //       , lng: this.state.address.address.geometry.location.lng
-      //       , islogin: 1
-      //       , name: this.props._user.name
-      //       , id: this.props._user.id
-      //       , address: this.state.shippingaddress
-      //       , fbid: this.props._user.fbid
-      //     }));
-
-
-
-      //     this.props.dispatch({ type: 'SHIPPINGADDRESS', shippingaddress: this.state.shippingaddress });
-      //     this.state.user.address = this.state.shippingaddress;
-      //     this.props.dispatch({ type: 'USER', user: this.state.user });
-      //     this.setState({ loading: false, });
-      //     Actions.pop({ refresh: {} });
-      //   });
-
-
-      this.setState({ loading: true, });
-      if (this.props._user.islogin == 0) return;
-      var params = {
-        buyerid: this.props._user.id,
-        lat: this.state.address.address.geometry.location.lat,
-        lng: this.state.address.address.geometry.location.lng,
-        address: this.state.shippingaddress,
-      };
-      //console.log(params);
-      var formData = new FormData();
-
-      for (var k in params) {
-        formData.append(k, params[k]);
-      }
-      var request = {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: formData
-      };
-
-      fetch(AppConfig.api + 'api/setbuyeraddress', request).then((response) => {
-        return response.json() // << This is the problem
-      })
-        .then((responseData) => { // responseData = undefined
-          return responseData;
+        fetch(AppConfig.api + 'api/updatebuyeraddress', request).then((response) => {
+          return response.json() // << This is the problem
         })
-        .then((data) => {
-          console.log(data);
-        }).done(() => {
-          this.setState({ loading: false, });
-          Actions.pop({ refresh: {Reload:true} });
-        });
+          .then((responseData) => { // responseData = undefined
+            return responseData;
+          })
+          .then((data) => {
+            console.log(data);
+          }).done(() => {
+            this.setState({ loading: false, });
+            Actions.pop({ refresh: { Reload: true } });
+          });
+      }
+      else {
+        // this.setState({ loading: true, });
+        // if (this.props._user.islogin == 0) return;
+        // var params = {
+        //   userid: this.props._user.id,
+        //   lat: this.state.address.address.geometry.location.lat,
+        //   lng: this.state.address.address.geometry.location.lng,
+        //   address: this.state.shippingaddress,
+        // };
+        // //console.log(params);
+        // var formData = new FormData();
 
+        // for (var k in params) {
+        //   formData.append(k, params[k]);
+        // }
+        // var request = {
+        //   method: 'POST',
+        //   headers: {
+        //     'Accept': 'application/json',
+        //   },
+        //   body: formData
+        // };
+
+        // fetch(AppConfig.api + 'api/updateshippingaddress', request).then((response) => {
+        //   return response.json() // << This is the problem
+        // })
+        //   .then((responseData) => { // responseData = undefined
+        //     return responseData;
+        //   })
+        //   .then((data) => {
+        //     console.log(data);
+        //   }).done(() => {
+
+
+        //     AsyncStorage.setItem("userdetail", JSON.stringify({
+        //       tel: this.props._user.tel
+        //       , email: this.props._user.email
+        //       , lat: this.state.address.address.geometry.location.lat
+        //       , lng: this.state.address.address.geometry.location.lng
+        //       , islogin: 1
+        //       , name: this.props._user.name
+        //       , id: this.props._user.id
+        //       , address: this.state.shippingaddress
+        //       , fbid: this.props._user.fbid
+        //     }));
+
+
+
+        //     this.props.dispatch({ type: 'SHIPPINGADDRESS', shippingaddress: this.state.shippingaddress });
+        //     this.state.user.address = this.state.shippingaddress;
+        //     this.props.dispatch({ type: 'USER', user: this.state.user });
+        //     this.setState({ loading: false, });
+        //     Actions.pop({ refresh: {} });
+        //   });
+
+
+
+        if (this.props._user.islogin == 0) return;
+        if (this.state.address == undefined) {
+          Alert.alert(
+            'Foodhall Message',
+            'กรุณาระบุตำแหน่ง',
+            [
+              { text: 'รับทราบ', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+            ]
+          );
+        }
+        else {
+          this.setState({ loading: true, });
+          var params = {
+            buyerid: this.props._user.id,
+            lat: this.state.address.address.geometry.location.lat,
+            lng: this.state.address.address.geometry.location.lng,
+            address: this.state.shippingaddress,
+          };
+          //console.log(params);
+          var formData = new FormData();
+
+          for (var k in params) {
+            formData.append(k, params[k]);
+          }
+          var request = {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+            },
+            body: formData
+          };
+
+          fetch(AppConfig.api + 'api/setbuyeraddress', request).then((response) => {
+            return response.json() // << This is the problem
+          })
+            .then((responseData) => { // responseData = undefined
+              return responseData;
+            })
+            .then((data) => {
+              console.log(data);
+            }).done(() => {
+              this.setState({ loading: false, });
+              Actions.pop({ refresh: { Reload: true } });
+            });
+
+
+        }
+      }
 
     }
+
 
   }
 
@@ -452,10 +479,11 @@ class Shippingaddress extends Component {
 
         }}>
           <View
-          > 
-          
-
-            <FormInput  placeholder={'ระบุที่อยู่ของคุณที่นี่'} width={250} height={100} multiline={true} value={this.state.shippingaddress} fontSize={16} onChangeText={shippingaddress => this.setState({ shippingaddress })}
+          >
+            <FormInput style={{
+              borderBottomColor: '#BFBFBF',
+              borderBottomWidth: 1
+            }} placeholder={'ระบุที่อยู่ของคุณที่นี่'} width={250} multiline={true} value={this.state.shippingaddress} fontSize={16} onChangeText={shippingaddress => this.setState({ shippingaddress })}
             />
 
             <TouchableOpacity

@@ -125,6 +125,13 @@ class Noti extends Component {
   }
 
 
+  componentWillReceiveProps(props) {
+    if (props.reload) {
+
+      this._onRefresh();
+    }
+  }
+
   componentWillMount() {
     this.setState({ userdetail: this.props._user });
   }
@@ -152,10 +159,6 @@ class Noti extends Component {
         height={(Platform.OS === 'ios') ? 44 : 64}
         titleColor={'#fff'}
         backgroundColor={AppColors.brand.primary}
-        leftButtonTitle={'Map'}
-        leftButtonIcon={require('../../../assets/images/ic_compass.png')}
-        onLeftButtonPress={Actions.map}
-        leftButtonTitleColor={'#fff'}
       />
       <Spacer size={64} />
       <View style={{ flex: 1 }}>
@@ -177,25 +180,32 @@ class Noti extends Component {
           <Text style={{ textAlign: 'center', color: '#BFBFBF' }}>ไม่มีรายการสั่ง</Text>
         </View>
       )
-
     }
     else {
-      return (
-        <ListView
-          enableEmptySections={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-          dataSource={this.state.dataSource}
-          renderRow={this.renderRow.bind(this)}>
-        </ListView>
-      )
+      if (this.state.dataSource._dataBlob.s1.length == 0) {
+        return (
+          <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+            <Text style={{ textAlign: 'center', color: '#BFBFBF' }}>ไม่มีรายการสั่ง</Text>
+          </View>
+        )
 
+      }
+      else {
+        return (
+          <ListView
+            enableEmptySections={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }
+            dataSource={this.state.dataSource}
+            renderRow={this.renderRow.bind(this)}>
+          </ListView>
+        )
+      }
     }
-
   }
 
 
@@ -216,8 +226,8 @@ class Noti extends Component {
         color = "#FF4F4F";
         break;
       case 1:
-        status = "รอร้านค้าตอบรับ";
-        color = "#F3C42C";
+        status = rowData.paidtype == 'bank' && rowData.istransfer == '0' ? 'รอการชำระเงิน' : 'รอร้านค้าตอบรับ';
+        color = rowData.paidtype == 'bank' && rowData.istransfer == '0' ? '#4A90E2' : '#F3C42C';
         break;
       case 2:
         status = "รับออเดอร์เรียบร้อย";
@@ -276,20 +286,38 @@ class Noti extends Component {
     )
   }
 
+  renderPayment(data) {
+    var payment = [];
+    if (data.paidtype.toUpperCase() == 'CASH') {
+      payment.push(<View key={data.id + 'cash'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับเงินสด</Text>
+      </View>);
+
+    }
+    if (data.paidtype.toUpperCase() == 'BANK') {
+      payment.push(<View key={data.id + 'bank'} style={{ flexDirection: 'row', marginRight: 15 }}>
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 5 }} name='check-circle-o' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> โอนเงิน</Text>
+      </View>);
+    }
+
+    return payment;
+  }
+
+
   renderOrdertype(rowData) {
     if (rowData.pickuptime > 0) {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='map-pin' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับกลับ</Text></View>)
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='map-pin' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> รับกลับ <Text style={{ fontSize: 18, color: "#F00", }}> ({rowData.pickuptime} นาที)</Text></Text></View>)
     }
     else {
-      return (<View style={{ flexDirection: 'row' }}>
-        <Icon style={{ fontSize: 16, color: '#E67E22', paddingTop: 3, }} name='check-circle-o' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> รับเงินสด</Text>
-        <Icon style={{ fontSize: 16, color: '#E67E22', marginLeft: 15, paddingTop: 3, }} name='motorcycle' />
-        <Text style={{ fontSize: 14, color: "#E67E22", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
+      return (<View style={{ flexDirection: 'row', marginRight: 15 }}>
+        {this.renderPayment(rowData)}
+        <Icon style={{ fontSize: 14, color: '#BFBFBF', paddingTop: 3, }} name='motorcycle' />
+        <Text style={{ fontSize: 14, color: "#8E8A8A", }}> บริการส่งถึงที่ {rowData.deriveryrange == 'NEXTDAY' ? '(ในวันถัดไป)' : '(ในวันนี้)'}</Text>
       </View>)
     }
 
