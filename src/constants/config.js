@@ -21,9 +21,9 @@ export default {
 
   // URLs
   urls: {},
-  api: 'http://leafood.servewellsolution.com/',
+  api: 'http://leafood.thaiwebdevelop.com/',
     //api:'http://192.168.1.36/api/',
-  imgaddress: 'http://leafood.servewellsolution.com/public/uploads/shop_img/',
+  imgaddress: 'http://leafood.thaiwebdevelop.com/public/uploads/shop_img/',
 
 
   // Navbar Props

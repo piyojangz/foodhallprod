@@ -5,9 +5,10 @@ target 'StarterKit' do
 
 
     
-pod 'react-native-image-crop-picker', :path => '../node_modules/react-native-image-crop-picker/ios'
-
-
+#pod 'react-native-image-crop-picker', :path => '../node_modules/react-native-image-crop-picker/ios'
+pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  'RCTText'
+] 
   target 'StarterKitTests' do
     inherit! :search_paths
     # Pods for testing

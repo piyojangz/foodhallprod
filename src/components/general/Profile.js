@@ -392,7 +392,7 @@ class Profile extends Component {
         var profileimg = AppConfig.imgaddress + this.state.userdetail.userimg;
       }
       else {
-        var profileimg = (this.state.userdetail.fbid == '' || this.state.userdetail.fbid == '0' ? 'http://leafood.servewellsolution.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250');
+        var profileimg = (this.state.userdetail.fbid == '' || this.state.userdetail.fbid == '0' ? 'http://leafood.thaiwebdevelop.com/public/uploads/shop_img/foodhallcover.png' : 'https://graph.facebook.com/' + this.state.userdetail.fbid + '/picture?width=250&height=250');
       }
 
       console.log(profileimg);
